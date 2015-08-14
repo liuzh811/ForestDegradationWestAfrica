@@ -63,19 +63,9 @@ write.csv(data, ".\\NBAR_results2\\rf.data.080715.csv")
 
 ################## boosted regression tree analysis ############################
 #prepare data, 
-# select forest pixels first based on MODIS and ESA GlobalCover 2009
-# if both products shows tropical forest, then, it is tropical forest
-data2 = data[,c("vi2","lc_modis","d2crop_modis2","rain_an","rain_slp",
-                "pop_den_change",
-                "dem","slope","tpi",
-                      "pop_den_2000","d2rd","d2set","protect")]
-colnames(data2)[c(1,2,3)] = c("vi", "lc","d2crop")
-data4 = data2[which(data2$lc == 1),] #only select forest pixels
-
-#select ESA data
 var.names = colnames(data)
 ref.inf = list()
-#for (i in 2:3){
+#for (i in 1:3){
   i = 1 #only used 1 
   data2 = data[,c(var.names[i],"lc_modis2","lc_esa","lc.esa.2000","d2crop_modis2","rain_an","rain_slp",
                   #"pop_den_change",
@@ -329,4 +319,4 @@ gbm.perspec(gbm1, find.int$rank.list[4,1], find.int$rank.list[4,3],
 
   dev.off() 
   
-#}
+
