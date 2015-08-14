@@ -1,3 +1,5 @@
+##############################################################################
+# downlaod MODIS MCD43A4 and MCD43A2 data
 #load library
 library("MODIS")
 library(rgdal)
@@ -30,3 +32,15 @@ runGdal(product="MCD43A4",  #Nadir BRDF-Adjusted Reflectance, 1000 m reso
         SDSstring = "1", #only extract the first layers
         outProj=proj.geo,
         job = "NBAR_QC")
+
+#################################################################################
+# download TRMM 3B42 V7 daily rainfall data
+#download website: http://pmm.nasa.gov/data-access/downloads/trmm
+#go to: 3B42 Research Derived Daily Product
+#click: NetCD/Simple Subset Wizard (GES DISC), go to: http://disc.sci.gsfc.nasa.gov/SSW/#keywords=TRMM_3B42_daily%207
+#select geographic region and time period
+#need to downland wget: http://www.gnu.org/software/wget/
+
+#download
+wget --content-disposition -i 3b42v72015.txt
+
