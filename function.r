@@ -151,7 +151,7 @@ mk1 = function(m,Year=c(2001:2015), data.length = 6, na.length = 8) {
 # for residual analysis, 
 # first value is coefficient, 2nd is intercept, 3rd is p value
 fun.cor <- function(x) {
-  if (is.na(x[1:15])|is.na(x[16:30])) 
+  if (length(which(is.na(x[1:15]))) > 8 | length(which(is.na(x[16:30])))>8) 
   {return(c(NA,NA,NA))} 
   else 
   {
