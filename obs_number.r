@@ -149,4 +149,79 @@ recls2plot(list3.dry, threshold = c(2, 4, 6, 8, 10, 12), color = "Reds")
 dev.off()
 
 
+##calculate the frequency of clear obs for each date
+obs.date1 = list()
+obs.date2 = list()
+obs.date3 = list()
+
+for(i in 1:18){ #a total of 18 date, 15 years
+  
+  idx = (0:14)*18+i
+  
+  list1.dry1 <- subset(list1, idx, drop=FALSE)
+  obs.date1[[i]] <- calc(list1.dry1,length.nonna)
+  
+  list2.dry1 <- subset(list2, idx, drop=FALSE)
+  obs.date2[[i]] <- calc(list2.dry1,length.nonna)
+  
+  list3.dry1 <- subset(list3, idx, drop=FALSE)
+  obs.date3[[i]] <- calc(list3.dry1,length.nonna)
+  
+  print(paste("Finish Calculating Year ", i, " at ", format(Sys.time(), "%a %b %d %X %Y"), sep = " ") )
+  
+}
+
+obs.date1 = stack(obs.date1)
+obs.date2 = stack(obs.date2)
+obs.date3 = stack(obs.date3)
+
+writeRaster(obs.date1,".\\NBAR_results2\\Obs.num.date.level1.wa.grd", overwrite=TRUE) #write a raster stack files
+writeRaster(obs.date2,".\\NBAR_results2\\Obs.num.date.level2.wa.grd", overwrite=TRUE) #write a raster stack files
+writeRaster(obs.date3,".\\NBAR_results2\\Obs.num.date.level3.wa.grd", overwrite=TRUE) #write a raster stack files
+
+obs.date1[lcc.grd != 1] = NA
+obs.date2[lcc.grd != 1] = NA
+obs.date3[lcc.grd != 1] = NA
+
+names(obs.date1) <- paste("DOY", substr(names(band.qc1)[c(1:18)], 14, 16), sep = "")
+names(obs.date2) <- paste("DOY", substr(names(band.qc1)[c(1:18)], 14, 16), sep = "")
+names(obs.date3) <- paste("DOY", substr(names(band.qc1)[c(1:18)], 14, 16), sep = "")
+
+
+p.strip <- list(cex=1.1, lines=2)
+
+png(file = ".\\NBAR_results2\\Obs.num.DOY.qc.level1.png", width = 5000, height = 5000, units = "px", res = 300)
+
+levelplot(obs.date1, par.settings=BuRdTheme(),
+          #maxpixels = nrow(obs.date1)*ncol(obs.date1),
+          colorkey= list(labels= list(cex = 1.5)),
+          scales=list(x=list(cex=1.1),y=list(cex=1.1)), 
+          par.strip.text=p.strip) +
+  layer(sp.polygons(county_b.geo, col = "black", lwd = 1.5)) 
+
+dev.off()
+
+png(file = ".\\NBAR_results2\\Obs.num.DOY.qc.level2.png", width = 5000, height = 5000, units = "px", res = 300)
+
+levelplot(obs.date2, par.settings=BuRdTheme(),
+          #maxpixels = nrow(obs.date1)*ncol(obs.date1),
+          colorkey= list(labels= list(cex = 1.5)),
+          scales=list(x=list(cex=1.1),y=list(cex=1.1)), 
+          par.strip.text=p.strip) +
+  layer(sp.polygons(county_b.geo, col = "black", lwd = 1.5)) 
+
+dev.off()
+
+png(file = ".\\NBAR_results2\\Obs.num.DOY.qc.level3.png", width = 5000, height = 5000, units = "px", res = 300)
+
+levelplot(obs.date3, par.settings=BuRdTheme(),
+          #maxpixels = nrow(obs.date1)*ncol(obs.date1),
+          colorkey= list(labels= list(cex = 1.5)),
+          scales=list(x=list(cex=1.1),y=list(cex=1.1)), 
+          par.strip.text=p.strip) +
+  layer(sp.polygons(county_b.geo, col = "black", lwd = 1.5)) 
+
+dev.off()
+
+
 
