@@ -14,12 +14,6 @@ county_b_ghana = extent(-13.5, 1.2, 4.35, 9.5)
 ## Section 1: calculate the trend of vegetation trend
 #1 read bands info
 band1 <- preStack(path=".\\NBAR", pattern="*Band1.tif$")
-band2 <- preStack(path=".\\NBAR", pattern="*Band2.tif$")
-band3 <- preStack(path=".\\NBAR", pattern="*Band3.tif$")
-band4 <- preStack(path=".\\NBAR", pattern="*Band4.tif$")
-band5 <- preStack(path=".\\NBAR", pattern="*Band5.tif$")
-band6 <- preStack(path=".\\NBAR", pattern="*Band6.tif$")
-band7 <- preStack(path=".\\NBAR", pattern="*Band7.tif$")
 YearDOY.band = substr(band1, 17, 23)
 
 YearDOYModis = data.frame(Year = as.numeric(substr(YearDOY.band,1,4)), DOY = as.numeric(substr(YearDOY.band,5,7)))
