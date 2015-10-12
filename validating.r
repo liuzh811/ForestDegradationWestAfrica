@@ -423,3 +423,128 @@ ggplot(dat.val.df.long, aes(factor(variable), value)) +
   theme(strip.text.x = element_text(size=22))
 
 ggsave(".\\NBAR_results2\\VI_comparsion_wa2.png", width = 8, height = 12, units = "in")
+
+
+###using density plot and one-way ANOVA to validate the results
+#10/12/2015, plot the density distribution
+setwd("D:\\users\\Zhihua\\MODIS")
+dat.val.df = data.frame(read.csv(".\\NBAR_results2\\dat.val.df.csv")[,-1])
+
+dat.val.df = dat.val.df[-which(dat.val.df$Name == "CÃ´te d'Ivoire"), ]
+levels(dat.val.df$Name)[c(3,4)] <- "Western Guinean"
+levels(dat.val.df$Name)[2] <- "Eastern Guinean"
+
+dat.val.df2 = dat.val.df
+dat.val.df2$Name = "All Guinean"
+dat.val.df = rbind(dat.val.df, dat.val.df2)
+
+dat.val.df.long = melt(dat.val.df, id.vars=c("status", "Name"))
+dat.val.df.long = dat.val.df.long[-which(dat.val.df.long$variable == "Year2"),]
+dat.val.df.long = dat.val.df.long[which(dat.val.df.long$Name == "All Guinean"),]
+
+levels(dat.val.df.long$status) <- c("Lightly", "Mature", "Severely")
+
+library(plyr)
+cdat <- ddply(dat.val.df.long, c("status", "variable"), summarise, value.mean=mean(value, na.rm = T))
+
+ggplot(dat.val.df.long, aes(x=value, fill=status)) + 
+  facet_wrap(~variable, scales = "free", ncol=2) + 
+  geom_density(alpha=.3)+
+  geom_vline(data=cdat, aes(xintercept=value.mean,  colour=status),linetype="dashed", size=1)+
+  theme(legend.text = element_text(size = 20))+
+  #theme(legend.title = element_text( size=20, face="bold"))+
+  theme(legend.position=c(0.92,0.95))+
+  theme(legend.title=element_blank())+
+  theme(axis.title.x = element_text(face="bold", colour="black", size=22),axis.text.x  = element_text(colour="black",size=20))+
+  theme(axis.title.y = element_text(face="bold", colour="black", size=22),axis.text.y  = element_text(colour="black",size=20))+
+  xlab("") + ylab("Density") +
+  theme(strip.text.x = element_text(size=22))
+
+ggsave(".\\NBAR_results2\\VI_comparsion_wa3.png", width = 12, height = 12, units = "in")
+
+#ANOVA analysis of the means
+dat.val.df.long = dat.val.df.long[complete.cases(dat.val.df.long),]
+fit.tcb = aov(value ~ status, data=dat.val.df.long[which(dat.val.df.long$variable == "TCB"),]) 
+TukeyHSD(fit.tcb)
+
+fit.tcw = aov(value ~ status, data=dat.val.df.long[which(dat.val.df.long$variable == "TCW"),]) 
+TukeyHSD(fit.tcw)
+
+fit.tcg = aov(value ~ status, data=dat.val.df.long[which(dat.val.df.long$variable == "TCG"),]) 
+TukeyHSD(fit.tcg)
+
+fit.evi = aov(value ~ status, data=dat.val.df.long[which(dat.val.df.long$variable == "EVI"),]) 
+TukeyHSD(fit.evi)
+
+fit.ndwi = aov(value ~ status, data=dat.val.df.long[which(dat.val.df.long$variable == "NDWI"),]) 
+TukeyHSD(fit.ndwi)
+
+fit.tca = aov(value ~ status, data=dat.val.df.long[which(dat.val.df.long$variable == "TCA"),]) 
+TukeyHSD(fit.tca)
+
+#for eastern and western guinean
+library(plyr)
+dat.val.df = data.frame(read.csv(".\\NBAR_results2\\dat.val.df.csv")[,-1])
+
+dat.val.df = dat.val.df[-which(dat.val.df$Name == "CÃ´te d'Ivoire"), ]
+levels(dat.val.df$Name)[c(3,4)] <- "Western Guinean"
+levels(dat.val.df$Name)[2] <- "Eastern Guinean"
+
+dat.val.df2 = dat.val.df
+dat.val.df2$Name = "All Guinean"
+dat.val.df = rbind(dat.val.df, dat.val.df2)
+
+dat.val.df.long = melt(dat.val.df, id.vars=c("status", "Name"))
+dat.val.df.long = dat.val.df.long[-which(dat.val.df.long$variable == "Year2"),]
+dat.val.df.long = dat.val.df.long[-which(dat.val.df.long$Name == "All Guinean"),]
+
+cdat2 <- ddply(dat.val.df.long, c("status", "variable", "Name"), summarise, value.mean=mean(value, na.rm = T))
+
+ggplot(dat.val.df.long, aes(x=value, fill=status)) + 
+  facet_wrap(~variable+Name, scales = "free", ncol=2) + 
+  geom_density(alpha=.3)+
+  geom_vline(data=cdat2, aes(xintercept=value.mean,  colour=status),linetype="dashed", size=1)+
+  theme(legend.text = element_text(size = 20))+
+  #theme(legend.title = element_text( size=20, face="bold"))+
+  #theme(legend.position=c(0.92,0.95))+
+  theme(legend.title=element_blank())+
+  theme(axis.title.x = element_text(face="bold", colour="black", size=22),axis.text.x  = element_text(colour="black",size=20))+
+  theme(axis.title.y = element_text(face="bold", colour="black", size=22),axis.text.y  = element_text(colour="black",size=20))+
+  xlab("") + ylab("Density") +
+  theme(strip.text.x = element_text(size=22))
+
+ggsave(".\\NBAR_results2\\VI_comparsion_wa4.png", width = 12, height = 12, units = "in")
+
+dat.val.df.long = dat.val.df.long[complete.cases(dat.val.df.long),]
+fit.tcb1 = aov(value ~ status, data=dat.val.df.long[which(dat.val.df.long$variable == "TCB" & dat.val.df.long$Name == "Western Guinean"),]) 
+TukeyHSD(fit.tcb1)
+fit.tcb2 = aov(value ~ status, data=dat.val.df.long[which(dat.val.df.long$variable == "TCB" & dat.val.df.long$Name == "Eastern Guinean"),]) 
+TukeyHSD(fit.tcb2)
+
+fit.tcw1 = aov(value ~ status, data=dat.val.df.long[which(dat.val.df.long$variable == "TCW" & dat.val.df.long$Name == "Western Guinean"),]) 
+TukeyHSD(fit.tcw1)
+fit.tcw2 = aov(value ~ status, data=dat.val.df.long[which(dat.val.df.long$variable == "TCW" & dat.val.df.long$Name == "Eastern Guinean"),]) 
+TukeyHSD(fit.tcw2)
+
+fit.tcg1 = aov(value ~ status, data=dat.val.df.long[which(dat.val.df.long$variable == "TCG" & dat.val.df.long$Name == "Western Guinean"),]) 
+TukeyHSD(fit.tcg1)
+fit.tcg2 = aov(value ~ status, data=dat.val.df.long[which(dat.val.df.long$variable == "TCG" & dat.val.df.long$Name == "Eastern Guinean"),]) 
+TukeyHSD(fit.tcg2)
+
+fit.evi1 = aov(value ~ status, data=dat.val.df.long[which(dat.val.df.long$variable == "EVI" & dat.val.df.long$Name == "Western Guinean"),]) 
+TukeyHSD(fit.evi1)
+fit.evi2 = aov(value ~ status, data=dat.val.df.long[which(dat.val.df.long$variable == "EVI" & dat.val.df.long$Name == "Eastern Guinean"),]) 
+TukeyHSD(fit.evi2)
+
+fit.ndwi1 = aov(value ~ status, data=dat.val.df.long[which(dat.val.df.long$variable == "NDWI" & dat.val.df.long$Name == "Western Guinean"),]) 
+TukeyHSD(fit.ndwi1)
+fit.ndwi2 = aov(value ~ status, data=dat.val.df.long[which(dat.val.df.long$variable == "NDWI" & dat.val.df.long$Name == "Eastern Guinean"),]) 
+TukeyHSD(fit.ndwi2)
+
+fit.tca1 = aov(value ~ status, data=dat.val.df.long[which(dat.val.df.long$variable == "TCA" & dat.val.df.long$Name == "Western Guinean"),]) 
+TukeyHSD(fit.tca1)
+fit.tca2 = aov(value ~ status, data=dat.val.df.long[which(dat.val.df.long$variable == "TCA" & dat.val.df.long$Name == "Eastern Guinean"),]) 
+TukeyHSD(fit.tca2)
+
+
+
