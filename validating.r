@@ -546,5 +546,68 @@ TukeyHSD(fit.tca1)
 fit.tca2 = aov(value ~ status, data=dat.val.df.long[which(dat.val.df.long$variable == "TCA" & dat.val.df.long$Name == "Eastern Guinean"),]) 
 TukeyHSD(fit.tca2)
 
+##plot the time series for some significant increasing, decreasing, or non-trend points,
+#plot 10 for each catogeries,
+proj.geo = "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs +towgs84=0,0,0 "
+
+trend_pts = readOGR(dsn="D:\\users\\Zhihua\\GeoData_West Africa\\Global_forest_cover_mat_hansen",
+                  layer="trend_pts")
+projection(trend_pts) <- proj.geo 
+
+TCW1.dry = stack(".\\NBAR_results2\\TCW1.dry.wa.grd")
+TCW2.dry = stack(".\\NBAR_results2\\TCW2.dry.wa.grd")
+TCW3.dry = stack(".\\NBAR_results2\\TCW3.dry.wa.grd")
+
+trend_pts.df1 = data.frame(t(extract(TCW1.dry, trend_pts)))
+trend_pts.df2 = data.frame(t(extract(TCW2.dry, trend_pts)))
+trend_pts.df3 = data.frame(t(extract(TCW3.dry, trend_pts)))
+
+#decrease point: 3,9, 10, 22, 23, 36, 37, 39, 57, 61
+#increase: 12, 17, 18, 31, 32, 33, 41, 47, 66, 67
+#no trend:5, 6, 13, 19, 27, 28, 30, 51, 52, 53, 62, 63, 68
+Dec_idx = c(3,9, 10, 22, 23, 36, 37, 39, 57, 61) #need to plus 1
+Inc_idx = c(11, 12, 17, 18, 31, 32, 33, 41, 47, 66, 67)
+not_idx = c(5, 6, 13, 19, 27, 28, 30, 51, 52, 53, 62, 63, 68)
+
+trend_pts.df2.dec = data.frame(Year = 2001:2015,trend_pts.df2[,Dec_idx+1])
+trend_pts.df2.dec.long = melt(trend_pts.df2.dec, id.var = "Year")
+ggplot(data=trend_pts.df2.dec.long, aes(x=Year, y=value, group=variable, colour=variable)) +
+  geom_line() +
+  geom_point()+
+  scale_shape_manual(values=1:length(Dec_idx))
+
+ggplot(data=trend_pts.df2.dec.long, aes(x=Year, y=value, group=variable, colour=variable)) +
+  geom_line(aes(linetype=variable), # Line type depends on cond
+            size = 1.3) +       # Thicker line
+  geom_point(aes(shape=variable),   # Shape depends on cond
+             size = 6)  +       # Large points
+  scale_shape(solid=FALSE)
+
+
+png(file = ".\\NBAR_results2\\trend.value.png", width = 2000, height = 3000, units = "px", res = 300)
+par(mfrow=c(3,1))
+
+matplot(2001:2015, trend_pts.df2[,Dec_idx+1], type = "b", pch = 1:length(Dec_idx), lwd = 1.5, lty = 1, col = 1,
+        ylab = "TCW value", xlab = "Year", cex = 1.5)
+
+legend("bottomleft",
+       pch = 1:length(Dec_idx), lwd = 1.5, lty = 1, col = 1,
+       legend=paste("P", Dec_idx, sep = ""),
+       cex = 1.2)
+
+matplot(2001:2015, trend_pts.df2[,Inc_idx+1], type = "b", pch = 1:length(Dec_idx), lwd = 1.5, lty = 1, col = 1,
+        ylab = "TCW value", xlab = "Year", cex = 1.5)
+legend("bottomleft",
+       pch = 1:length(Inc_idx), lwd = 1.5, lty = 1, col = 1,
+       legend=paste("P", Inc_idx, sep = ""))
+
+matplot(2001:2015,trend_pts.df2[,not_idx+1], type = "b", pch = 1:length(not_idx), lwd = 1.5, lty = 1, col = 1,
+        ylab = "TCW value", xlab = "Year", cex = 1.5)
+legend("bottomleft",
+       pch = 1:length(not_idx), lwd = 1.5, lty = 1, col = 1,
+       legend=paste("P", not_idx, sep = ""))
+
+dev.off()
+
 
 
