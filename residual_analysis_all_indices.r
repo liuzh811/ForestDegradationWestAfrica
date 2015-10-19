@@ -16,6 +16,7 @@
 #   Enquist and Enquist note that the tropical forest had different sensistivity to rainfall change, therefore we 
 #  examined up to 3 month before the dry season
 
+#functions needed: fun.cor2, mk1, Point2raster, Ex.pts.all
 
 setwd("D:\\users\\Zhihua\\MODIS")
 library("MODIS")
