@@ -262,8 +262,8 @@ for(i in 2001:2015){
   TCA1.dry[[i-2000]] <- calc(TCA1.dry1, median, na.rm = TRUE)
   EVI1.dry1 <- subset(EVI1, idx, drop=FALSE)
   EVI1.dry[[i-2000]] <- calc(EVI1.dry1, median, na.rm = TRUE)
-  NDVI1.dry1 <- subset(NDVI1, idx, drop=FALSE)
-  NDVI1.dry[[i-2000]] <- calc(NDVI1.dry1, median, na.rm = TRUE)
+  NDWI1.dry1 <- subset(NDWI1, idx, drop=FALSE)
+  NDWI1.dry[[i-2000]] <- calc(NDWI1.dry1, median, na.rm = TRUE)
   
   TCW2.dry1 <- subset(TCW2, idx, drop=FALSE)
   TCW2.dry[[i-2000]] <- calc(TCW2.dry1, median, na.rm = TRUE)
