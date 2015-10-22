@@ -560,3 +560,91 @@ NDWI.trd3.grd[is.na(NDWI3.dry.trd$p)] = 4
 writeRaster(NDWI.trd1.grd,".\\NBAR_results3\\NDWI1.dry.trend.wa.tif", format="GTiff", overwrite=TRUE)
 writeRaster(NDWI.trd2.grd,".\\NBAR_results3\\NDWI2.dry.trend.wa.tif", format="GTiff", overwrite=TRUE)
 writeRaster(NDWI.trd3.grd,".\\NBAR_results3\\NDWI3.dry.trend.wa.tif", format="GTiff", overwrite=TRUE)
+
+##########################################################################
+#################   plot the trend info      #############################
+require('lattice')
+require('rasterVis')
+require('maptools')
+require('raster')
+require('rgdal')
+require("RColorBrewer")
+
+setwd("D:\\users\\Zhihua\\MODIS")
+
+TCB.trd2.grd = raster(".\\NBAR_results3\\TCB2.dry.trend.wa.tif")
+TCG.trd2.grd = raster(".\\NBAR_results3\\TCG2.dry.trend.wa.tif")
+TCW.trd2.grd = raster(".\\NBAR_results3\\TCW2.dry.trend.wa.tif")
+TCA.trd2.grd = raster(".\\NBAR_results3\\TCA2.dry.trend.wa.tif")
+EVI.trd2.grd = raster(".\\NBAR_results3\\EVI2.dry.trend.wa.tif")
+NDWI.trd2.grd = raster(".\\NBAR_results3\\NDWI2.dry.trend.wa.tif")
+
+#get boundry
+proj.geo = "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs +towgs84=0,0,0 "
+county_b = readOGR(dsn="D:\\users\\Zhihua\\TRMM\\gadm_v2_shp",layer="gadm2_westernafrican_dis")
+county_b.geo = spTransform(county_b, CRS(proj.geo))
+
+county_b_ghana = county_b.geo[which(county_b.geo$NAME_0=="Ghana"|county_b.geo$NAME_0=="CÃ´te d'Ivoire"|
+                                      county_b.geo$NAME_0=="Sierra Leone"|county_b.geo$NAME_0=="Liberia"),]
+
+
+county_b.geo.r = rasterize(county_b.geo, TCB.trd2.grd)
+county_b.geo.r = county_b.geo.r >= 1
+
+#clip to shape
+TCB.trd2.grd = TCB.trd2.grd*county_b.geo.r
+TCG.trd2.grd = TCG.trd2.grd*county_b.geo.r
+TCW.trd2.grd = TCW.trd2.grd*county_b.geo.r
+TCA.trd2.grd = TCA.trd2.grd*county_b.geo.r
+EVI.trd2.grd = EVI.trd2.grd*county_b.geo.r
+NDWI.trd2.grd = NDWI.trd2.grd*county_b.geo.r
+
+trd = stack(TCB.trd2.grd,TCG.trd2.grd,TCW.trd2.grd, TCA.trd2.grd,EVI.trd2.grd,NDWI.trd2.grd)
+names(trd) <- c("TCB", "TCG","TCW","TCA","EVI","NDWI")
+
+breaks2_change <- 0:4        
+legendbrks2_change <- 1:4 - 0.5
+
+
+arg1 <- list(at=seq(1,4,1), labels=c("Decrease","Increase","No Trend","Not Calculated")) #these are the class names
+labels = c("Decrease","Increase","No Trend","Not Calculated")
+color1=c("#e66101", "#1a9641","#ffffbf","#2b83ba")
+
+#using levelplot methods
+png(file = ".\\NBAR_results3\\trend.wa.png", width = 4000, height = 3000, units = "px", res = 300)
+
+p.strip <- list(cex=1.5, lines=2, fontface='bold')
+levelplot(trd,
+          maxpixels = nrow(trd)*ncol(trd),
+          at= breaks2_change, margin=FALSE,
+          col.regions= color1,
+          colorkey= list(labels= list(labels= labels,at= legendbrks2_change, cex = 1.5)),
+          scales=list(x=list(cex=1.3),y=list(cex=1.3)), 
+          par.strip.text=p.strip) +
+  layer(sp.polygons(county_b_ghana, col = "black", lwd = 1.5)) 
+
+dev.off()
+
+#using raster plot methods
+png(file = ".\\NBAR_results3\\trend.wa-2.png", width = 4000, height = 3000, units = "px", res = 300)
+
+par(mfrow=c(3,2),mar=c(0,0,0,0))
+
+for (i in 1:6){
+plot(trd[[i]],col = color1, 
+     #axis.arg=arg
+     #xlim=c(-2500000, -500000), 
+     #ylim=c(ext@ymin, ext@ymax),
+     legend=FALSE,
+     axes=FALSE,
+     box=FALSE,
+)
+
+text(x=-5.5, y=9.75, names(trd)[i], cex = 2)
+plot(county_b_ghana, add = TRUE)
+
+}
+
+legend(x = -13.5, y = 6.5, legend = labels, fill = color1,  cex = 2,  box.lwd = 0, box.col = "white",bg = "transparent")
+
+dev.off()
