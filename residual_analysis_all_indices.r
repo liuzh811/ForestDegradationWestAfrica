@@ -262,7 +262,6 @@ tcw.df.residual.trd.value = as.numeric(tcw.df.residual.trd[1,])
 tcw.df.residual.trd.p = as.numeric(tcw.df.residual.trd[2,])                                    
 # change to raster
 corr = Point2raster(tcw.rf.cor[1,], raster = TCW2.dry[[1]])
-corr[lcc.grd != 1] = NA
 
 tcw.df.residual.trd.value = Point2raster(tcw.df.residual.trd.value, raster = TCW2.dry[[1]])
 tcw.df.residual.trd.p = Point2raster(tcw.df.residual.trd.p, raster = TCW2.dry[[1]])
@@ -271,7 +270,7 @@ tcw.df.residual.trd.value2 = tcw.df.residual.trd.value
 tcw.df.residual.trd.value2[tcw.df.residual.trd.value < 0 & tcw.df.residual.trd.p <= 0.1] = 1
 tcw.df.residual.trd.value2[tcw.df.residual.trd.value >= 0 & tcw.df.residual.trd.p <= 0.1] = 2
 tcw.df.residual.trd.value2[tcw.df.residual.trd.p > 0.1] = 3
-tcw.df.residual.trd.value2[lcc.grd == 1&is.na(tcw.df.residual.trd.p)] = 4
+tcw.df.residual.trd.value2[&is.na(tcw.df.residual.trd.p)] = 4
 #save results
 writeRaster(tcw.df.residual.trd.value2,".\\NBAR_results3\\tcw.df.residual.trd.wa2.tif", format="GTiff", overwrite=TRUE)
 writeRaster(corr,".\\NBAR_results3\\tcw.rainfall.cor.wa3.tif", format="GTiff", overwrite=TRUE)
@@ -280,17 +279,16 @@ writeRaster(corr,".\\NBAR_results3\\tcw.rainfall.cor.wa3.tif", format="GTiff", o
 tcb.df.residual.trd.value = as.numeric(tcb.df.residual.trd[1,])                                    
 tcb.df.residual.trd.p = as.numeric(tcb.df.residual.trd[2,])                                    
 # change to raster
-corr = Point2raster(tcb.rf.cor[1,], raster = tcb2.dry[[1]])
-corr[lcc.grd != 1] = NA
+corr = Point2raster(tcb.rf.cor[1,], raster = TCW2.dry[[1]])
 
-tcb.df.residual.trd.value = Point2raster(tcb.df.residual.trd.value, raster = tcb2.dry[[1]])
-tcb.df.residual.trd.p = Point2raster(tcb.df.residual.trd.p, raster = tcb2.dry[[1]])
+tcb.df.residual.trd.value = Point2raster(tcb.df.residual.trd.value, raster = TCW2.dry[[1]])
+tcb.df.residual.trd.p = Point2raster(tcb.df.residual.trd.p, raster = TCW2.dry[[1]])
 
 tcb.df.residual.trd.value2 = tcb.df.residual.trd.value
 tcb.df.residual.trd.value2[tcb.df.residual.trd.value < 0 & tcb.df.residual.trd.p <= 0.1] = 1
 tcb.df.residual.trd.value2[tcb.df.residual.trd.value >= 0 & tcb.df.residual.trd.p <= 0.1] = 2
 tcb.df.residual.trd.value2[tcb.df.residual.trd.p > 0.1] = 3
-tcb.df.residual.trd.value2[lcc.grd == 1&is.na(tcb.df.residual.trd.p)] = 4
+tcb.df.residual.trd.value2[is.na(tcb.df.residual.trd.p)] = 4
 #save results
 writeRaster(tcb.df.residual.trd.value2,".\\NBAR_results3\\tcb.df.residual.trd.wa2.tif", format="GTiff", overwrite=TRUE)
 writeRaster(corr,".\\NBAR_results3\\tcb.rainfall.cor.wa3.tif", format="GTiff", overwrite=TRUE)
@@ -299,17 +297,16 @@ writeRaster(corr,".\\NBAR_results3\\tcb.rainfall.cor.wa3.tif", format="GTiff", o
 tcg.df.residual.trd.value = as.numeric(tcg.df.residual.trd[1,])                                    
 tcg.df.residual.trd.p = as.numeric(tcg.df.residual.trd[2,])                                    
 # change to raster
-corr = Point2raster(tcg.rf.cor[1,], raster = tcg2.dry[[1]])
-corr[lcc.grd != 1] = NA
+corr = Point2raster(tcg.rf.cor[1,], raster = TCW2.dry[[1]])
 
-tcg.df.residual.trd.value = Point2raster(tcg.df.residual.trd.value, raster = tcg2.dry[[1]])
-tcg.df.residual.trd.p = Point2raster(tcg.df.residual.trd.p, raster = tcg2.dry[[1]])
+tcg.df.residual.trd.value = Point2raster(tcg.df.residual.trd.value, raster = TCW2.dry[[1]])
+tcg.df.residual.trd.p = Point2raster(tcg.df.residual.trd.p, raster = TCW2.dry[[1]])
 
 tcg.df.residual.trd.value2 = tcg.df.residual.trd.value
 tcg.df.residual.trd.value2[tcg.df.residual.trd.value < 0 & tcg.df.residual.trd.p <= 0.1] = 1
 tcg.df.residual.trd.value2[tcg.df.residual.trd.value >= 0 & tcg.df.residual.trd.p <= 0.1] = 2
 tcg.df.residual.trd.value2[tcg.df.residual.trd.p > 0.1] = 3
-tcg.df.residual.trd.value2[lcc.grd == 1&is.na(tcg.df.residual.trd.p)] = 4
+tcg.df.residual.trd.value2[is.na(tcg.df.residual.trd.p)] = 4
 #save results
 writeRaster(tcg.df.residual.trd.value2,".\\NBAR_results3\\tcg.df.residual.trd.wa2.tif", format="GTiff", overwrite=TRUE)
 writeRaster(corr,".\\NBAR_results3\\tcg.rainfall.cor.wa3.tif", format="GTiff", overwrite=TRUE)
@@ -318,17 +315,16 @@ writeRaster(corr,".\\NBAR_results3\\tcg.rainfall.cor.wa3.tif", format="GTiff", o
 tca.df.residual.trd.value = as.numeric(tca.df.residual.trd[1,])                                    
 tca.df.residual.trd.p = as.numeric(tca.df.residual.trd[2,])                                    
 # change to raster
-corr = Point2raster(tca.rf.cor[1,], raster = tca2.dry[[1]])
-corr[lcc.grd != 1] = NA
+corr = Point2raster(tca.rf.cor[1,], raster = TCW2.dry[[1]])
 
-tca.df.residual.trd.value = Point2raster(tca.df.residual.trd.value, raster = tca2.dry[[1]])
-tca.df.residual.trd.p = Point2raster(tca.df.residual.trd.p, raster = tca2.dry[[1]])
+tca.df.residual.trd.value = Point2raster(tca.df.residual.trd.value, raster = TCW2.dry[[1]])
+tca.df.residual.trd.p = Point2raster(tca.df.residual.trd.p, raster = TCW2.dry[[1]])
 
 tca.df.residual.trd.value2 = tca.df.residual.trd.value
 tca.df.residual.trd.value2[tca.df.residual.trd.value < 0 & tca.df.residual.trd.p <= 0.1] = 1
 tca.df.residual.trd.value2[tca.df.residual.trd.value >= 0 & tca.df.residual.trd.p <= 0.1] = 2
 tca.df.residual.trd.value2[tca.df.residual.trd.p > 0.1] = 3
-tca.df.residual.trd.value2[lcc.grd == 1&is.na(tca.df.residual.trd.p)] = 4
+tca.df.residual.trd.value2[is.na(tca.df.residual.trd.p)] = 4
 #save results
 writeRaster(tca.df.residual.trd.value2,".\\NBAR_results3\\tca.df.residual.trd.wa2.tif", format="GTiff", overwrite=TRUE)
 writeRaster(corr,".\\NBAR_results3\\tca.rainfall.cor.wa3.tif", format="GTiff", overwrite=TRUE)
@@ -337,17 +333,16 @@ writeRaster(corr,".\\NBAR_results3\\tca.rainfall.cor.wa3.tif", format="GTiff", o
 evi.df.residual.trd.value = as.numeric(evi.df.residual.trd[1,])                                    
 evi.df.residual.trd.p = as.numeric(evi.df.residual.trd[2,])                                    
 # change to raster
-corr = Point2raster(evi.rf.cor[1,], raster = evi2.dry[[1]])
-corr[lcc.grd != 1] = NA
+corr = Point2raster(evi.rf.cor[1,], raster = TCW2.dry[[1]])
 
-evi.df.residual.trd.value = Point2raster(evi.df.residual.trd.value, raster = evi2.dry[[1]])
-evi.df.residual.trd.p = Point2raster(evi.df.residual.trd.p, raster = evi2.dry[[1]])
+evi.df.residual.trd.value = Point2raster(evi.df.residual.trd.value, raster = TCW2.dry[[1]])
+evi.df.residual.trd.p = Point2raster(evi.df.residual.trd.p, raster = TCW2.dry[[1]])
 
 evi.df.residual.trd.value2 = evi.df.residual.trd.value
 evi.df.residual.trd.value2[evi.df.residual.trd.value < 0 & evi.df.residual.trd.p <= 0.1] = 1
 evi.df.residual.trd.value2[evi.df.residual.trd.value >= 0 & evi.df.residual.trd.p <= 0.1] = 2
 evi.df.residual.trd.value2[evi.df.residual.trd.p > 0.1] = 3
-evi.df.residual.trd.value2[lcc.grd == 1&is.na(evi.df.residual.trd.p)] = 4
+evi.df.residual.trd.value2[is.na(evi.df.residual.trd.p)] = 4
 #save results
 writeRaster(evi.df.residual.trd.value2,".\\NBAR_results3\\evi.df.residual.trd.wa2.tif", format="GTiff", overwrite=TRUE)
 writeRaster(corr,".\\NBAR_results3\\evi.rainfall.cor.wa3.tif", format="GTiff", overwrite=TRUE)
@@ -356,17 +351,16 @@ writeRaster(corr,".\\NBAR_results3\\evi.rainfall.cor.wa3.tif", format="GTiff", o
 ndwi.df.residual.trd.value = as.numeric(ndwi.df.residual.trd[1,])                                    
 ndwi.df.residual.trd.p = as.numeric(ndwi.df.residual.trd[2,])                                    
 # change to raster
-corr = Point2raster(ndwi.rf.cor[1,], raster = ndwi2.dry[[1]])
-corr[lcc.grd != 1] = NA
+corr = Point2raster(ndwi.rf.cor[1,], raster = TCW2.dry[[1]])
 
-ndwi.df.residual.trd.value = Point2raster(ndwi.df.residual.trd.value, raster = ndwi2.dry[[1]])
-ndwi.df.residual.trd.p = Point2raster(ndwi.df.residual.trd.p, raster = ndwi2.dry[[1]])
+ndwi.df.residual.trd.value = Point2raster(ndwi.df.residual.trd.value, raster = TCW2.dry[[1]])
+ndwi.df.residual.trd.p = Point2raster(ndwi.df.residual.trd.p, raster = TCW2.dry[[1]])
 
 ndwi.df.residual.trd.value2 = ndwi.df.residual.trd.value
 ndwi.df.residual.trd.value2[ndwi.df.residual.trd.value < 0 & ndwi.df.residual.trd.p <= 0.1] = 1
 ndwi.df.residual.trd.value2[ndwi.df.residual.trd.value >= 0 & ndwi.df.residual.trd.p <= 0.1] = 2
 ndwi.df.residual.trd.value2[ndwi.df.residual.trd.p > 0.1] = 3
-ndwi.df.residual.trd.value2[lcc.grd == 1&is.na(ndwi.df.residual.trd.p)] = 4
+ndwi.df.residual.trd.value2[is.na(ndwi.df.residual.trd.p)] = 4
 #save results
 writeRaster(ndwi.df.residual.trd.value2,".\\NBAR_results3\\ndwi.df.residual.trd.wa2.tif", format="GTiff", overwrite=TRUE)
 writeRaster(corr,".\\NBAR_results3\\ndwi.rainfall.cor.wa3.tif", format="GTiff", overwrite=TRUE)
