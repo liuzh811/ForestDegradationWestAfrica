@@ -648,3 +648,47 @@ plot(county_b_ghana, add = TRUE)
 legend(x = -13.5, y = 6.5, legend = labels, fill = color1,  cex = 2,  box.lwd = 0, box.col = "white",bg = "transparent")
 
 dev.off()
+
+#plot residual trends
+TCB.trd2.grd.res = raster(".\\NBAR_results3\\tcb.df.residual.trd.wa2.tif")
+TCG.trd2.grd.res = raster(".\\NBAR_results3\\tcg.df.residual.trd.wa2.tif")
+TCW.trd2.grd.res = raster(".\\NBAR_results3\\tcw.df.residual.trd.wa2.tif")
+TCA.trd2.grd.res = raster(".\\NBAR_results3\\tca.df.residual.trd.wa2.tif")
+EVI.trd2.grd.res = raster(".\\NBAR_results3\\evi.df.residual.trd.wa2.tif")
+NDWI.trd2.grd.res = raster(".\\NBAR_results3\\ndwi.df.residual.trd.wa2.tif")
+
+TCB.trd2.grd.res = TCB.trd2.grd.res*county_b.geo.r
+TCG.trd2.grd.res = TCG.trd2.grd.res*county_b.geo.r
+TCW.trd2.grd.res = TCW.trd2.grd.res*county_b.geo.r
+TCA.trd2.grd.res = TCA.trd2.grd.res*county_b.geo.r
+EVI.trd2.grd.res = EVI.trd2.grd.res*county_b.geo.r
+NDWI.trd2.grd.res = NDWI.trd2.grd.res*county_b.geo.r
+
+trd.res = stack(TCB.trd2.grd.res,TCG.trd2.grd.res,TCW.trd2.grd.res, TCA.trd2.grd.res,EVI.trd2.grd.res,NDWI.trd2.grd.res)
+names(trd.res) <- c("TCB", "TCG","TCW","TCA","EVI","NDWI")
+
+png(file = ".\\NBAR_results3\\residual.trend.wa-2.png", width = 4000, height = 3000, units = "px", res = 300)
+
+par(mfrow=c(3,2),mar=c(0,0,0,0))
+
+for (i in 1:6){
+  plot(trd.res[[i]],col = color1, 
+       #axis.arg=arg
+       #xlim=c(-2500000, -500000), 
+       #ylim=c(ext@ymin, ext@ymax),
+       legend=FALSE,
+       axes=FALSE,
+       box=FALSE,
+  )
+  
+  text(x=-5.5, y=9.75, names(trd)[i], cex = 2)
+  plot(county_b_ghana, add = TRUE)
+  
+}
+
+legend(x = -13.5, y = 6.5, legend = labels, fill = color1,  cex = 2,  box.lwd = 0, box.col = "white",bg = "transparent")
+
+dev.off()
+
+
+
