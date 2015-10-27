@@ -591,6 +591,10 @@ county_b_ghana = county_b.geo[which(county_b.geo$NAME_0=="Ghana"|county_b.geo$NA
 county_b.geo.r = rasterize(county_b.geo, TCB.trd2.grd)
 county_b.geo.r = county_b.geo.r >= 1
 
+#highlight some regions
+regions = readOGR(dsn=".\\NBAR_results3", layer="Val_regions")
+projection(regions) <- proj.geo 
+
 #clip to shape
 TCB.trd2.grd = TCB.trd2.grd*county_b.geo.r
 TCG.trd2.grd = TCG.trd2.grd*county_b.geo.r
@@ -604,7 +608,6 @@ names(trd) <- c("TCB", "TCG","TCW","TCA","EVI","NDWI")
 
 breaks2_change <- 0:4        
 legendbrks2_change <- 1:4 - 0.5
-
 
 arg1 <- list(at=seq(1,4,1), labels=c("Decrease","Increase","No Trend","Not Calculated")) #these are the class names
 labels = c("Decrease","Increase","No Trend","Not Calculated")
@@ -621,7 +624,8 @@ levelplot(trd,
           colorkey= list(labels= list(labels= labels,at= legendbrks2_change, cex = 1.5)),
           scales=list(x=list(cex=1.3),y=list(cex=1.3)), 
           par.strip.text=p.strip) +
-  layer(sp.polygons(county_b_ghana, col = "black", lwd = 1.5)) 
+  layer(sp.polygons(county_b_ghana, col = "black", lwd = 1.5)) +
+  layer(sp.polygons(regions, col = "red", lwd = 2))
 
 dev.off()
 
@@ -629,7 +633,6 @@ dev.off()
 png(file = ".\\NBAR_results3\\trend.wa-2.png", width = 4000, height = 3000, units = "px", res = 300)
 
 par(mfrow=c(3,2),mar=c(0,0,0,0))
-
 for (i in 1:6){
 plot(trd[[i]],col = color1, 
      #axis.arg=arg
@@ -642,11 +645,10 @@ plot(trd[[i]],col = color1,
 
 text(x=-5.5, y=9.75, names(trd)[i], cex = 2)
 plot(county_b_ghana, add = TRUE)
-
+plot(regions, col = "red", add = TRUE)
 }
 
 legend(x = -13.5, y = 6.5, legend = labels, fill = color1,  cex = 2,  box.lwd = 0, box.col = "white",bg = "transparent")
-
 dev.off()
 
 #plot residual trends
@@ -683,12 +685,141 @@ for (i in 1:6){
   
   text(x=-5.5, y=9.75, names(trd)[i], cex = 2)
   plot(county_b_ghana, add = TRUE)
+  plot(regions, col = "red", add = TRUE)
   
 }
 
 legend(x = -13.5, y = 6.5, legend = labels, fill = color1,  cex = 2,  box.lwd = 0, box.col = "white",bg = "transparent")
 
 dev.off()
+
+#plot land cover info
+county_b_ghana = extent(-13.5, 1.2, 4.35, 9.5)
+
+lc = raster("D:\\users\\Zhihua\\MODIS\\landcover\\LCType.tif")
+lc = crop(lc, county_b_ghana)
+
+#plot land cover
+oldclas <- unique(lc)
+newclas <- c(1, 7, 2, 7, 7, 7, 7, 7, 3, 4, 5, 7, 6, 7, 6,7)
+rclastab.df <- data.frame(oldclas, newclas)
+lc_rc = subs(lc, rclastab.df)
+clasnames <- c("Water",
+               "Evergreen Broadleaf Forest",
+               "Woody Savannas",
+               "Savannas",
+               "Grasslands",
+               "Cropland/Natural Vegetation Mosaic",
+               "Others")
+clscolor = c("#4575b4", "#005a32","#01665e","#5ab4ac","#7fbf7b","#a6761d","#fc8d59")  			
+breaks2 <- 0:7				
+legendbrks2 <- 1:7 - 0.5
+
+png(".\\NBAR_results3\\LC_type.png",height = 3000, width = 5000, res = 300, units = "px")
+
+levelplot(lc_rc, main="Land Cover Type",
+          maxpixels = nrow(lc_rc)*ncol(lc_rc),
+          at= breaks2, margin=FALSE,
+          col.regions= clscolor,
+          colorkey= list(labels= list(labels= clasnames,at= legendbrks2, cex = 1.5)),space = "bottom") +
+  layer(sp.polygons(county_b.geo, col = "black", lwd = 2)) +
+  layer(sp.polygons(regions, col = "red", lwd = 2))
+
+dev.off()
+
+writeRaster(lc_rc,".\\NBAR_results3\\lc_rc.wa.tif", format="GTiff", overwrite=TRUE)
+
+##################plot highlighted area  ############################
+#plot TCW
+TCW2.dry = stack(".\\NBAR_results3\\TCW2.dry.wa.grd")
+names(TCW2.dry) <- paste("Y", 2001:2015, sep = "")
+
+# i = 1:7
+i = 1  
+require(colorRamps)
+TCW2.dry_1 = crop(TCW2.dry, regions[i,])
+color_tc3 = rev(rainbow(99, start=0,end=1))
+color_tc32 = rev(blue2green2red(99))
+
+qu.val = quantile(as.vector(as.matrix(TCW2.dry_1)), prob = c(0.01, 0.99), na.rm = T)
+
+breaks_tc3 <- round(seq(min(minValue(TCW2.dry_1)),max(maxValue(TCW2.dry_1)),length.out=100),3)  
+legendbrks2_tc3 <- round(seq(min(minValue(TCW2.dry_1)),max(maxValue(TCW2.dry_1)),length.out=10),0)
+
+breaks_tc3 <- round(seq(min(qu.val[1]),max(qu.val[2]),length.out=100),3)  
+legendbrks2_tc3 <- round(seq(min(qu.val[1]),max(qu.val[2]),length.out=10),0)
+
+png(paste(".\\NBAR_results3\\annual_tc3_dry_subset", i, ".png", sep = ""),height = 3000, width = 5000, res = 300, units = "px")
+
+levelplot(TCW2.dry_1, main="Annual TC Wetness Map",
+          at= breaks_tc3, margin=FALSE,
+          maxpixels = nrow(TCW2.dry_1)*ncol(TCW2.dry_1),
+          col.regions=color_tc32,
+          colorkey= list(labels= list(labels= legendbrks2_tc3,at= legendbrks2_tc3, cex = 1.5), space = "bottom"),
+          layout=c(5, 3))+
+  latticeExtra::layer(sp.polygons(county_b_ghana, col = "black", lwd = 2))
+
+dev.off()
+
+#plot EVI
+EVI2.dry = stack(".\\NBAR_results3\\EVI2.dry.wa.grd")
+names(EVI2.dry) <- paste("Y", 2001:2015, sep = "")
+
+# i = 1:7
+i = 1
+require(colorRamps)
+EVI2.dry_1 = crop(EVI2.dry, regions[i,])
+color_tc3 = rev(rainbow(99, start=0,end=1))
+color_tc32 = rev(blue2green2red(99))
+
+qu.val = quantile(as.vector(as.matrix(EVI2.dry_1)), prob = c(0.01, 0.99), na.rm = T)
+
+breaks_tc3 <- round(seq(min(minValue(EVI2.dry_1)),max(maxValue(EVI2.dry_1)),length.out=100),3)  
+legendbrks2_tc3 <- round(seq(min(minValue(EVI2.dry_1)),max(maxValue(EVI2.dry_1)),length.out=10),3)
+
+breaks_tc3 <- round(seq(min(qu.val[1]),max(qu.val[2]),length.out=100),3)  
+legendbrks2_tc3 <- round(seq(min(qu.val[1]),max(qu.val[2]),length.out=10),3)
+
+png(paste(".\\NBAR_results3\\annual_evi3_dry_subset", i, ".png", sep = ""),height = 3000, width = 5000, res = 300, units = "px")
+
+levelplot(EVI2.dry_1, main="Annual EVI Map",
+          at= breaks_tc3, margin=FALSE,
+          maxpixels = nrow(EVI2.dry_1)*ncol(EVI2.dry_1),
+          col.regions=color_tc32,
+          colorkey= list(labels= list(labels= legendbrks2_tc3,at= legendbrks2_tc3, cex = 1.5), space = "bottom"),
+          layout=c(5, 3))+
+  latticeExtra::layer(sp.polygons(county_b_ghana, col = "black", lwd = 2))
+
+dev.off()
+
+####plot lclu
+lc_rc = raster(".\\NBAR_results3\\lc_rc.wa.tif")
+
+lc_arg1 <- list(at=seq(1,7,1), labels=clasnames) #these are the class names
+
+png(file = ".\\NBAR_results3\\lc_subset.png", width = 4000, height = 2000, units = "px", res = 300)
+
+par(mfrow=c(2,4),mar=c(0,0,0,0))
+for (i in 1:7){
+  lc_rc1 = crop(lc_rc, regions[i,])
+  ext = extent(lc_rc1)
+  plot(lc_rc1,col = clscolor, 
+       #axis.arg=arg
+       #xlim=c(-2500000, -500000), 
+       #ylim=c(ext@ymin, ext@ymax),
+       legend=FALSE,
+       axes=FALSE,
+       box=FALSE,
+  )
+  text(x=ext@xmin+0.02, y=ext@ymax-0.02, i, col = "red", cex = 2)
+  #plot(county_b_ghana, add = TRUE)
+}
+
+plot.new()
+legend(x = 0.01, y=0.9, legend = clasnames, fill = clscolor,  cex = 2,  box.lwd = 0, box.col = "white",bg = "transparent")
+
+dev.off()
+
 
 
 
