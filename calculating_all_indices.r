@@ -738,6 +738,11 @@ names(TCW2.dry) <- paste("Y", 2001:2015, sep = "")
 i = 1  
 require(colorRamps)
 TCW2.dry_1 = crop(TCW2.dry, regions[i,])
+
+#replace non-vegetated area with NA
+lc_rc1 = crop(lc_rc, regions[i,])
+TCW2.dry_1[lc_rc1 == 1 | lc_rc1 == 7] = NA
+
 color_tc3 = rev(rainbow(99, start=0,end=1))
 color_tc32 = rev(blue2green2red(99))
 
@@ -769,6 +774,11 @@ names(EVI2.dry) <- paste("Y", 2001:2015, sep = "")
 i = 1
 require(colorRamps)
 EVI2.dry_1 = crop(EVI2.dry, regions[i,])
+
+#replace non-vegetated area with NA
+lc_rc1 = crop(lc_rc, regions[i,])
+EVI2.dry_1[lc_rc1 == 1 | lc_rc1 == 7] = NA
+
 color_tc3 = rev(rainbow(99, start=0,end=1))
 color_tc32 = rev(blue2green2red(99))
 
