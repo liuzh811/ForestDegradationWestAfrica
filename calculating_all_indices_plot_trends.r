@@ -810,25 +810,74 @@ lc_arg1 <- list(at=seq(1,7,1), labels=clasnames) #these are the class names
 png(file = ".\\NBAR_results3\\lc_subset.png", width = 4000, height = 2000, units = "px", res = 300)
 
 par(mfrow=c(2,4),mar=c(0,0,0,0))
+
 for (i in 1:7){
   lc_rc1 = crop(lc_rc, regions[i,])
   ext = extent(lc_rc1)
-  plot(lc_rc1,col = clscolor, 
-       #axis.arg=arg
-       #xlim=c(-2500000, -500000), 
-       #ylim=c(ext@ymin, ext@ymax),
+  plot(lc_rc1,col = clscolor[c(2:7)], 
+       #axis.arg=lc_arg,
+       #xlim=c(ext@xmin, ext@xmax),
+       #ylim=c(ext@ymin, ext@ymax), 
        legend=FALSE,
        axes=FALSE,
        box=FALSE,
   )
+  
   text(x=ext@xmin+0.02, y=ext@ymax-0.02, i, col = "red", cex = 2)
   #plot(county_b_ghana, add = TRUE)
+  
 }
 
+
 plot.new()
+
 legend(x = 0.01, y=0.9, legend = clasnames, fill = clscolor,  cex = 2,  box.lwd = 0, box.col = "white",bg = "transparent")
 
 dev.off()
+
+#plot a subsets of evi and tcw trends
+png(file = ".\\NBAR_results3\\trend_subset.png", width = 4000, height = 2000, units = "px", res = 300)
+
+region_id_selected = c(2,3,6,7)
+
+par(mfrow=c(2,4),mar=c(0,0,0,0))
+
+for (i in region_id_selected){
+  TCW.trd2.grd1 = crop(TCW.trd2.grd, regions[i,])
+  ext = extent(TCW.trd2.grd1)
+  plot(TCW.trd2.grd1,col = color1[c(1:3)], 
+       #axis.arg=lc_arg,
+       #xlim=c(ext@xmin, ext@xmax),
+       #ylim=c(ext@ymin, ext@ymax), 
+       legend=FALSE,
+       axes=FALSE,
+       box=FALSE,
+  )
+  
+  text(x=ext@xmin+0.2, y=ext@ymax-0.02, paste("TCW: region = ", i, sep = ""), col = "black", cex = 2)
+  #plot(county_b_ghana, add = TRUE)
+  
+}
+
+for (i in region_id_selected){
+  EVI.trd2.grd1 = crop(EVI.trd2.grd, regions[i,])
+  ext = extent(EVI.trd2.grd1)
+  plot(EVI.trd2.grd1,col = color1[c(1:3)], 
+       #axis.arg=lc_arg,
+       #xlim=c(ext@xmin, ext@xmax),
+       #ylim=c(ext@ymin, ext@ymax), 
+       legend=FALSE,
+       axes=FALSE,
+       box=FALSE,
+  )
+  
+  text(x=ext@xmin+0.2, y=ext@ymax-0.02, paste("EVI: region = ", i, sep = ""), col = "black", cex = 2)
+  #plot(county_b_ghana, add = TRUE)
+  
+}
+
+dev.off()
+
 
 
 
