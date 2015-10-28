@@ -609,8 +609,8 @@ names(trd) <- c("TCB", "TCG","TCW","TCA","EVI","NDWI")
 breaks2_change <- 0:4        
 legendbrks2_change <- 1:4 - 0.5
 
-arg1 <- list(at=seq(1,4,1), labels=c("Decrease","Increase","No Trend","Not Calculated")) #these are the class names
-labels = c("Decrease","Increase","No Trend","Not Calculated")
+arg1 <- list(at=seq(1,4,1), labels=c("Negative","Positive","No Trend","Not Calculated")) #these are the class names
+labels = c("Negative","Positive","No Trend","Not Calculated")
 color1=c("#e66101", "#1a9641","#ffffbf","#2b83ba")
 
 #using levelplot methods
@@ -645,7 +645,7 @@ plot(trd[[i]],col = color1,
 
 text(x=-5.5, y=9.75, names(trd)[i], cex = 2)
 plot(county_b_ghana, add = TRUE)
-plot(regions, col = "red", add = TRUE)
+plot(regions, border = "red", add = TRUE)
 }
 
 legend(x = -13.5, y = 6.5, legend = labels, fill = color1,  cex = 2,  box.lwd = 0, box.col = "white",bg = "transparent")
@@ -685,7 +685,7 @@ for (i in 1:6){
   
   text(x=-5.5, y=9.75, names(trd)[i], cex = 2)
   plot(county_b_ghana, add = TRUE)
-  plot(regions, col = "red", add = TRUE)
+  plot(regions, border = "red", add = TRUE)
   
 }
 
