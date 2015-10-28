@@ -624,8 +624,8 @@ levelplot(trd,
           colorkey= list(labels= list(labels= labels,at= legendbrks2_change, cex = 1.5)),
           scales=list(x=list(cex=1.3),y=list(cex=1.3)), 
           par.strip.text=p.strip) +
-  layer(sp.polygons(county_b_ghana, col = "black", lwd = 1.5)) +
-  layer(sp.polygons(regions, col = "red", lwd = 2))
+  latticeExtra::layer(sp.polygons(county_b_ghana, col = "black", lwd = 1.5)) +
+  latticeExtra::layer(sp.polygons(regions, col = "red", lwd = 2))
 
 dev.off()
 
@@ -668,6 +668,21 @@ NDWI.trd2.grd.res = NDWI.trd2.grd.res*county_b.geo.r
 
 trd.res = stack(TCB.trd2.grd.res,TCG.trd2.grd.res,TCW.trd2.grd.res, TCA.trd2.grd.res,EVI.trd2.grd.res,NDWI.trd2.grd.res)
 names(trd.res) <- c("TCB", "TCG","TCW","TCA","EVI","NDWI")
+
+png(file = ".\\NBAR_results3\\residual.trend.wa.png", width = 4000, height = 3000, units = "px", res = 300)
+
+p.strip <- list(cex=1.5, lines=2, fontface='bold')
+levelplot(trd.res,
+          maxpixels = nrow(trd)*ncol(trd),
+          at= breaks2_change, margin=FALSE,
+          col.regions= color1,
+          colorkey= list(labels= list(labels= labels,at= legendbrks2_change, cex = 1.5)),
+          scales=list(x=list(cex=1.3),y=list(cex=1.3)), 
+          par.strip.text=p.strip) +
+  latticeExtra::layer(sp.polygons(county_b_ghana, col = "black", lwd = 1.5)) +
+  latticeExtra::layer(sp.polygons(regions, col = "red", lwd = 2))
+
+dev.off()
 
 png(file = ".\\NBAR_results3\\residual.trend.wa-2.png", width = 4000, height = 3000, units = "px", res = 300)
 
