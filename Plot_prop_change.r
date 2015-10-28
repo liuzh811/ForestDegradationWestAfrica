@@ -1,4 +1,12 @@
 
+clasnames <- c("Water",
+               "RainForest",
+               "Woody Savannas",
+               "Savannas",
+               "Grasslands",
+               "Cropland/Natural Mosaic",
+               "Others")
+
 #after run calculating all indices and plot trend
 
 lc_rc1 = lc_rc*100 + TCW.trd2.grd 
@@ -39,12 +47,12 @@ lc_rc5.df$prop = 100*lc_rc5.df$count/rep(lc_sum$count, each = 4)
 
 lc_rc.df = rbind(data.frame(lc_rc1.df, VI = rep("TCW", nrow(lc_rc1.df))), 
                   data.frame(lc_rc2.df, VI = rep("EVI", nrow(lc_rc2.df))),
-                  data.frame(lc_rc3.df, VI = rep("NDWI", nrow(lc_rc2.df))),
-                 data.frame(lc_rc4.df, VI = rep("TCG", nrow(lc_rc2.df))),
-                 data.frame(lc_rc5.df, VI = rep("TCA", nrow(lc_rc2.df))))
+                  data.frame(lc_rc3.df, VI = rep("NDWI", nrow(lc_rc3.df))),
+                 data.frame(lc_rc4.df, VI = rep("TCG", nrow(lc_rc4.df))),
+                 data.frame(lc_rc5.df, VI = rep("TCA", nrow(lc_rc5.df))))
 
-lc_rc.df = lc_rc.df[-which(lc_rc.df$lc == 1 | lc_rc.df$lc == 7| lc_rc.df$lc == 5), ] #remove class 1: water; and 7: other class
-lc_rc.df = lc_rc.df[-which(lc_rc.df$trend == 4), ] #not calculated classes
+lc_rc.df = lc_rc.df[-which(lc_rc.df$lc == 1 | lc_rc.df$lc == 7| lc_rc.df$lc == 5), ] #Remove class 1: water; and 7: other class
+lc_rc.df = lc_rc.df[-which(lc_rc.df$trend == 4), ] #remove Not Calculated classes
 
 library(reshape2)
 library(ggplot2)
@@ -54,8 +62,7 @@ lc_rc1.df.long = melt(lc_rc.df[,c("lc","trend","prop","VI")], id.vars=c("lc", "t
 lc_rc1.df.long$trend = factor(lc_rc1.df.long$trend)
 levels(lc_rc1.df.long$trend) <- c("Negative","Positive", "No Trend")
 lc_rc1.df.long$lc = factor(lc_rc1.df.long$lc)
-levels(lc_rc1.df.long$lc) <- clasnames[c(2,3,4,6)]
-
+levels(lc_rc1.df.long$lc) <- clasnames[as.numeric(levels(lc_rc1.df.long$lc))]
 
 ggplot(data=lc_rc1.df.long, aes(x=trend, y=value, fill=trend)) +
   facet_grid(VI ~ lc) +
