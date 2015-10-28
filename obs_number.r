@@ -223,5 +223,48 @@ levelplot(obs.date3, par.settings=BuRdTheme(),
 
 dev.off()
 
+#############plot number of year to calculate the trend
+TCW1.dry.trd = stack(".\\NBAR_results2\\TCW1.dry.trend.wa.grd")
+TCW2.dry.trd = stack(".\\NBAR_results2\\TCW2.dry.trend.wa.grd")
+TCW3.dry.trd = stack(".\\NBAR_results2\\TCW3.dry.trend.wa.grd")
+lcc.grd = raster(".\\NBAR_results2\\lc.forest.tif")
+
+Numb = stack(TCW1.dry.trd[[3]],TCW2.dry.trd[[3]],TCW3.dry.trd[[3]])
+Numb.recls = recls2(Numb,threshold = c(4,6,8,10,12))
+Numb.recls[lcc.grd != 1] = NA
+
+#set color scheme
+threshold = c(4,6,8,10,12)
+color = "Spectral"
+
+clscolor_change = brewer.pal(length(threshold)+2,color)[c(2:(length(threshold)+2))]
+clscolor_change = c("#762a83","#af8dc3","#e7d4e8","#d9f0d3","#7fbf7b","#1b7837")
+
+breaks2_change <- 0:(length(threshold)+1)        
+legendbrks2_change <- 1:(length(threshold)+1) - 0.5
+
+clasnames_change = c(paste("<=", threshold[1], sep = " "))
+for(j in 1:(length(threshold)-1)){
+  
+  clasnames_change = c(clasnames_change, paste(threshold[j], "-", threshold[j+1], sep = " "))
+  
+}
+clasnames_change[length(threshold)+1] <- c(paste(">", threshold[length(threshold)], sep = " "))
+
+names(Numb.recls) <-c("Better.than.1","Better.than.2","Better.than.3")
+
+png(file = ".\\NBAR_results2\\trend.numb.wa.png", width = 2000, height = 3000, units = "px", res = 300)
+
+p.strip <- list(cex=1.3, lines=2)
+levelplot(Numb.recls,
+          maxpixels = nrow(Numb.recls)*ncol(Numb.recls),
+          at= breaks2_change, margin=FALSE,
+          col.regions= clscolor_change,
+          colorkey= list(labels= list(labels= clasnames_change,at= legendbrks2_change, cex = 1.5)),
+          scales=list(x=list(cex=1.3),y=list(cex=1.3)), 
+          par.strip.text=p.strip) +
+  layer(sp.polygons(county_b.geo, col = "black", lwd = 1.5)) 
+
+dev.off()
 
 
