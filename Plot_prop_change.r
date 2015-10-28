@@ -52,7 +52,7 @@ library(ggplot2)
 lc_rc1.df.long = melt(lc_rc.df[,c("lc","trend","prop","VI")], id.vars=c("lc", "trend","VI"))
 
 lc_rc1.df.long$trend = factor(lc_rc1.df.long$trend)
-levels(lc_rc1.df.long$trend) <- c("Positive", "Negative", "No Trend")
+levels(lc_rc1.df.long$trend) <- c("Negative","Positive", "No Trend")
 lc_rc1.df.long$lc = factor(lc_rc1.df.long$lc)
 levels(lc_rc1.df.long$lc) <- clasnames[c(2,3,4,6)]
 
