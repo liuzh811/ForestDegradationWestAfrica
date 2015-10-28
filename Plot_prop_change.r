@@ -73,39 +73,3 @@ ggplot(data=lc_rc1.df.long, aes(x=trend, y=value, fill=trend)) +
 ggsave(".\\NBAR_results3\\trend_biomes.png", width = 10, height = 7.5, units = "in")
 
 
-#plot number of obs used to calculate trends
-TCW2.dry.trd = stack(".\\NBAR_results2\\TCW2.dry.trend.wa.grd")
-Numb.recls = recls2(TCW2.dry.trd[[3]], threshold = c(4,6,8,10,12))
-
-threshold = c(4,6,8,10,12)
-color = "Spectral"
-
-clscolor_change = brewer.pal(length(threshold)+2,color)[c(2:(length(threshold)+2))]
-clscolor_change = c("#762a83","#af8dc3","#e7d4e8","#d9f0d3","#7fbf7b","#1b7837")
-
-breaks2_change <- 0:(length(threshold)+1)        
-legendbrks2_change <- 1:(length(threshold)+1) - 0.5
-
-clasnames_change = c(paste("<=", threshold[1], sep = " "))
-for(j in 1:(length(threshold)-1)){
-  
-  clasnames_change = c(clasnames_change, paste(threshold[j], "-", threshold[j+1], sep = " "))
-  
-}
-clasnames_change[length(threshold)+1] <- c(paste(">", threshold[length(threshold)], sep = " "))
-
-png(file = ".\\NBAR_results3\\trend.numb.wa.png", width = 2000, height = 3000, units = "px", res = 300)
-
-p.strip <- list(cex=1.3, lines=2)
-levelplot(Numb.recls,
-          maxpixels = nrow(Numb.recls)*ncol(Numb.recls),
-          at= breaks2_change, margin=FALSE,
-          col.regions= clscolor_change,
-          colorkey= list(labels= list(labels= clasnames_change,at= legendbrks2_change, cex = 1.5)),
-          scales=list(x=list(cex=1.3),y=list(cex=1.3)), 
-          par.strip.text=p.strip) +
-  latticeExtra::layer(sp.polygons(county_b.geo, col = "black", lwd = 1.5)) 
-
-dev.off()
-
-
