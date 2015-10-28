@@ -1,3 +1,7 @@
+#calculate 
+# // 1. number of clear obs for each year; 
+# // 2. number of clear obs for day of year; 
+# // 3. number of year for trend analysis  
 
 setwd("D:\\users\\Zhihua\\MODIS")
 library("MODIS")
@@ -11,7 +15,6 @@ proj.geo = "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs +towgs84=0,0,0 "
 
 county_b_ghana = extent(-13.5, 1.2, 4.35, 9.5)
 ###################################################################################
-## Section 1: calculate the trend of vegetation trend
 #1 read bands info
 band1 <- preStack(path=".\\NBAR", pattern="*Band1.tif$")
 YearDOY.band = substr(band1, 17, 23)
@@ -76,6 +79,7 @@ list1 = stack(list1)
 list2 = stack(list2)
 list3 = stack(list3)
 
+###################  1: number of clear obs for each year;  ############
 # calculate number of non-NA 
 
 length.nonna = function(x){length(which(!is.na(x)))}
@@ -136,9 +140,10 @@ recls2plot(list1.dry, threshold = c(2, 4, 6, 8, 10, 12), color = "Reds")
 
 dev.off()
 
-png(file = ".\\NBAR_results2\\Obs.num.qc.level2.png", width = 5000, height = 5000, units = "px", res = 300)
+list2.dry[[county_b.geo.r != 1]] = NA
+png(file = ".\\NBAR_results3\\Obs.num.qc.level2.png", width = 5000, height = 5000, units = "px", res = 300)
 
-recls2plot(list2.dry, threshold = c(2, 4, 6, 8, 10, 12), color = "Reds")
+recls2plot(list2.dry, threshold = c(2, 4, 6, 8, 10, 12), color = "Spectral")
 
 dev.off()
 
@@ -149,7 +154,7 @@ recls2plot(list3.dry, threshold = c(2, 4, 6, 8, 10, 12), color = "Reds")
 dev.off()
 
 
-##calculate the frequency of clear obs for each date
+###################  2: number of clear obs for each day of year  ############
 obs.date1 = list()
 obs.date2 = list()
 obs.date3 = list()
@@ -223,15 +228,17 @@ levelplot(obs.date3, par.settings=BuRdTheme(),
 
 dev.off()
 
-#############plot number of year to calculate the trend
+###################  3. plot umber of year to calculate the trend  ############
 TCW1.dry.trd = stack(".\\NBAR_results2\\TCW1.dry.trend.wa.grd")
 TCW2.dry.trd = stack(".\\NBAR_results2\\TCW2.dry.trend.wa.grd")
 TCW3.dry.trd = stack(".\\NBAR_results2\\TCW3.dry.trend.wa.grd")
-lcc.grd = raster(".\\NBAR_results2\\lc.forest.tif")
+# lcc.grd = raster(".\\NBAR_results2\\lc.forest.tif")
 
 Numb = stack(TCW1.dry.trd[[3]],TCW2.dry.trd[[3]],TCW3.dry.trd[[3]])
+Numb = TCW2.dry.trd[[3]]
 Numb.recls = recls2(Numb,threshold = c(4,6,8,10,12))
-Numb.recls[lcc.grd != 1] = NA
+# Numb.recls[lcc.grd != 1] = NA
+Numb.recls[county_b.geo.r != 1] = NA
 
 #set color scheme
 threshold = c(4,6,8,10,12)
@@ -253,7 +260,7 @@ clasnames_change[length(threshold)+1] <- c(paste(">", threshold[length(threshold
 
 names(Numb.recls) <-c("Better.than.1","Better.than.2","Better.than.3")
 
-png(file = ".\\NBAR_results2\\trend.numb.wa.png", width = 2000, height = 3000, units = "px", res = 300)
+png(file = ".\\NBAR_results3\\trend.numb.wa.png", width = 2000, height = 1000, units = "px", res = 300)
 
 p.strip <- list(cex=1.3, lines=2)
 levelplot(Numb.recls,
@@ -263,7 +270,7 @@ levelplot(Numb.recls,
           colorkey= list(labels= list(labels= clasnames_change,at= legendbrks2_change, cex = 1.5)),
           scales=list(x=list(cex=1.3),y=list(cex=1.3)), 
           par.strip.text=p.strip) +
-  layer(sp.polygons(county_b.geo, col = "black", lwd = 1.5)) 
+  latticeExtra::layer(sp.polygons(county_b.geo, col = "black", lwd = 1.5)) 
 
 dev.off()
 
