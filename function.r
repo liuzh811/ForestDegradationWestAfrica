@@ -245,7 +245,7 @@ recls2plot = function(x,
             at= breaks2_change, margin=FALSE,
             col.regions= clscolor_change,
             colorkey= list(labels= list(labels= clasnames_change,at= legendbrks2_change, cex = 1.5))) +  
-    layer(sp.polygons(county_b.geo, col = "black", lwd = 1.5))
+    latticeExtra::layer(sp.polygons(county_b.geo, col = "black", lwd = 1.5))
   
 }
 
