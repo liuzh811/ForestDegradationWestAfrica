@@ -366,6 +366,5 @@ writeRaster(ndwi.df.residual.trd.value2,".\\NBAR_results3\\ndwi.df.residual.trd.
 writeRaster(corr,".\\NBAR_results3\\ndwi.rainfall.cor.wa3.tif", format="GTiff", overwrite=TRUE)
 
 ##compare residual trend and raw trend
-trd.grd2 = raster(".\\NBAR_results2\\trend.wa.2.tif")
-trd.comparsion = trd.grd2 == tcw.df.residual.trd.value2
-freq(trd.comparsion)
+tcw.comparsion = TCW.trd2.grd == tcw.df.residual.trd.value2
+freq(tcw.comparsion)
