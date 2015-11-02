@@ -129,6 +129,7 @@ dlmcd43(product = "MCD43A2",
 
 ##############################################################
 #change hdf to tif files
+#create a MCD43A2tif folder first
 require(rgdal)
 require(raster)
 library(gdalUtils)
@@ -155,8 +156,10 @@ gdal_translate(paste("./MCD43A2/", hdf.fn[i],sep = ""),
       print(paste(" HDF to TIF converting for ", i, "of", length(hdf.fn), " at ", format(Sys.time(), "%a %b %d %X %Y"), sep = " ") )
       }
 
-
+#################################################################
 #mosaic files
+#create a MCD43A2tif_mosaic folder first
+
 dir = "D:/users/Zhihua/MODIS/NBARV006"
 setwd(dir)
 
