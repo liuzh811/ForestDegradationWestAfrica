@@ -193,3 +193,55 @@ print(paste(" Finish mosaicing for", band[i], "of", length(h17v07.b1), " at ", f
 }
 }
 
+############################################################################
+#caluclate percent of non-NA for level 2, [0,1,2 were used] 
+b1 = stack(paste("./MCD43A2tif_mosaic/", 
+                 list.files(path = "./MCD43A2tif_mosaic", pattern = "*band1.tif$"), sep = ""))
+b2 = stack(paste("./MCD43A2tif_mosaic/", 
+                 list.files(path = "./MCD43A2tif_mosaic", pattern = "*band2.tif$"), sep = ""))
+b3 = stack(paste("./MCD43A2tif_mosaic/", 
+                 list.files(path = "./MCD43A2tif_mosaic", pattern = "*band3.tif$"), sep = ""))
+b4 = stack(paste("./MCD43A2tif_mosaic/", 
+                 list.files(path = "./MCD43A2tif_mosaic", pattern = "*band4.tif$"), sep = ""))
+b5 = stack(paste("./MCD43A2tif_mosaic/", 
+                 list.files(path = "./MCD43A2tif_mosaic", pattern = "*band5.tif$"), sep = ""))
+b6 = stack(paste("./MCD43A2tif_mosaic/", 
+                 list.files(path = "./MCD43A2tif_mosaic", pattern = "*band6.tif$"), sep = ""))
+b7 = stack(paste("./MCD43A2tif_mosaic/", 
+                 list.files(path = "./MCD43A2tif_mosaic", pattern = "*band7.tif$"), sep = ""))
+
+
+#replace 
+b1[b1 > 2] = NA
+b1[!is.na(b1)] = 1
+
+b2[b2 > 2] = NA
+b2[!is.na(b2)] = 1
+
+b3[b3 > 2] = NA
+b3[!is.na(b3)] = 1
+
+b4[b4 > 2] = NA
+b4[!is.na(b4)] = 1
+
+b5[b5 > 2] = NA
+b5[!is.na(b5)] = 1
+
+b6[b6 > 2] = NA
+b6[!is.na(b6)] = 1
+
+b7[b7 > 2] = NA
+b7[!is.na(b7)] = 1
+
+#calculate sum
+b.list = list()
+for (i in 1:length(b1)){
+  tmp = calc(stack(b1[i], b2[i],b3[i],b4[i],b5[i],b6[i],b7[i]), sum, na.rm = TRUE)
+  tmp = tmp >= 5
+  b.list[[i]] <- tmp
+}
+
+b.list = stack(b.list)
+b.list = calc(b.list, sum, na.rm = TRUE)
+prop = b.list/length(b1)
+
