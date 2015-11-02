@@ -155,3 +155,38 @@ gdal_translate(paste("./MCD43A2/", hdf.fn[i],sep = ""),
       print(paste(" HDF to TIF converting for ", i, "of", length(hdf.fn), " at ", format(Sys.time(), "%a %b %d %X %Y"), sep = " ") )
       }
 
+
+#mosaic files
+dir = "D:/users/Zhihua/MODIS/NBARV006"
+setwd(dir)
+
+band = paste("band",1:7, sep = "")
+
+qa.list1 = list.files(path = "./MCD43A2tif", pattern = "*.tif$")
+
+for (i in 1:length(band)){
+qa.list = qa.list1[which(substr(qa.list1, 33, 37) == band[i])]
+  
+h17v07.b1 = qa.list[which(substr(qa.list, 18,23) == "h17v07")]
+h17v08.b1 = qa.list[which(substr(qa.list, 18,23) == "h17v08")]
+
+for (j in 1:length(h17v07.b1)){
+tmp1 = paste("./MCD43A2tif/", h17v07.b1[j], sep = "")
+tmp2 = paste("./MCD43A2tif/", h17v08.b1[j], sep = "")
+
+mosaic_rasters(gdalfile=c(tmp1,tmp2),
+               dst_dataset=paste("./MCD43A2tif_mosaic/", "test_mosaic.tif",sep = ""),
+               separate=TRUE,
+               of="GTiff",
+               verbose=TRUE)
+
+tmp = stack("./MCD43A2tif_mosaic/test_mosaic.tif")
+tmp = calc(tmp, sum, na.rm = TRUE)
+
+writeRaster(tmp,paste("./MCD43A2tif_mosaic/", substr(h17v07.b1[j], 1,17), band[i],".tif", sep = ""), format="GTiff", overwrite=TRUE)
+file.remove("./MCD43A2tif_mosaic/test_mosaic.tif")
+
+print(paste(" Finish mosaicing for", band[i], "of", length(h17v07.b1), " at ", format(Sys.time(), "%a %b %d %X %Y"), sep = " ") )
+}
+}
+
