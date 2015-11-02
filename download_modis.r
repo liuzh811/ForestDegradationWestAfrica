@@ -100,7 +100,8 @@ dlmcd43 <- function(product, #e.g., MCD43A2, MCD43A4
         #only select h17v07/h17v08
         fn = links[which(substr(links, 18, 23) == paste("h",tileh[j],"v",tilev[k], sep = ""))]
         download.file(paste(url1, fn[1], sep = ""), 
-                      destfile = paste(getwd(),"/",output_loc,"/", fn[1], sep = ""))
+                      destfile = paste(getwd(),"/",output_loc,"/", fn[1], sep = ""),
+                      mode = "wb")
         
       } # end of k
     } #end if j
@@ -117,6 +118,7 @@ dlmcd43(product = "MCD43A4",
         tilev = c("07","08"),
         output_loc = "MCD43A4")
 
+#"MCD43A2"; data quality layers
 dlmcd43(product = "MCD43A2", 
         version = 6,
         start_date="20051101",
@@ -124,3 +126,32 @@ dlmcd43(product = "MCD43A2",
         tileh = "17",
         tilev = c("07","08"),
         output_loc = "MCD43A2")
+
+##############################################################
+#change hdf to tif files
+require(rgdal)
+require(raster)
+library(gdalUtils)
+
+gdal_setInstallation(search_path = "C:\\OSGeo4W64\\bin", rescan = TRUE,
+                     ignore.full_scan = FALSE, verbose = FALSE)
+
+dir = "D:/users/Zhihua/MODIS/NBARV006"
+setwd(dir)
+
+hdf.fn = list.files(path = "./MCD43A2", pattern = "*.hdf$")
+
+#gdalinfo(paste(dir, "/","MCD43A2/", hdf.fn[1], sep = ""))
+#gdalsrsinfo(paste(dir, "/","MCD43A2/", hdf.fn[1], sep = ""))
+#data layers 12:18 are data quality for band1 - band7
+
+for(i in 1:length(hdf.fn)){
+  for (j in 12:18){
+gdal_translate(paste("./MCD43A2/", hdf.fn[i],sep = ""),
+               paste("./MCD43A2tif/", substr(hdf.fn[i], 1, 24), "quality_band", j-11, ".tif",sep = ""),
+               of="GTiff",
+               output_Raster=TRUE,verbose=TRUE,sd_index=j)
+      }
+      print(paste(" HDF to TIF converting for ", i, "of", length(hdf.fn), " at ", format(Sys.time(), "%a %b %d %X %Y"), sep = " ") )
+      }
+
