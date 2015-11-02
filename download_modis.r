@@ -210,36 +210,66 @@ b6 = stack(paste("./MCD43A2tif_mosaic/",
 b7 = stack(paste("./MCD43A2tif_mosaic/", 
                  list.files(path = "./MCD43A2tif_mosaic", pattern = "*band7.tif$"), sep = ""))
 
+#replace bad data with NA
+b1.list = list()
+b2.list = list()
+b3.list = list()
+b4.list = list()
+b5.list = list()
+b6.list = list()
+b7.list = list()
 
-#replace 
-b1[b1 > 2] = NA
-b1[!is.na(b1)] = 1
-
-b2[b2 > 2] = NA
-b2[!is.na(b2)] = 1
-
-b3[b3 > 2] = NA
-b3[!is.na(b3)] = 1
-
-b4[b4 > 2] = NA
-b4[!is.na(b4)] = 1
-
-b5[b5 > 2] = NA
-b5[!is.na(b5)] = 1
-
-b6[b6 > 2] = NA
-b6[!is.na(b6)] = 1
-
-b7[b7 > 2] = NA
-b7[!is.na(b7)] = 1
+for (i in 1:nlayers(b1)){
+  tmp = b1[[i]]
+  tmp[tmp > 2] = NA
+  tmp[!is.na(tmp)] = 1
+  b1.list[[i]] <- tmp
+  
+  tmp = b2[[i]]
+  tmp[tmp > 2] = NA
+  tmp[!is.na(tmp)] = 1
+  b2.list[[i]] <- tmp
+  
+  tmp = b3[[i]]
+  tmp[tmp > 2] = NA
+  tmp[!is.na(tmp)] = 1
+  b3.list[[i]] <- tmp
+  
+  tmp = b4[[i]]
+  tmp[tmp > 2] = NA
+  tmp[!is.na(tmp)] = 1
+  b4.list[[i]] <- tmp
+  
+  tmp = b5[[i]]
+  tmp[tmp > 2] = NA
+  tmp[!is.na(tmp)] = 1
+  b5.list[[i]] <- tmp
+  
+  tmp = b6[[i]]
+  tmp[tmp > 2] = NA
+  tmp[!is.na(tmp)] = 1
+  b6.list[[i]] <- tmp
+  
+  tmp = b7[[i]]
+  tmp[tmp > 2] = NA
+  tmp[!is.na(tmp)] = 1
+  b7.list[[i]] <- tmp
+  
+  print(paste(" Finish calculating ", i, "of", nlayers(b1), " at ", format(Sys.time(), "%a %b %d %X %Y"), sep = " ") )
+  
+}
 
 #calculate sum
 b.list = list()
-for (i in 1:length(b1)){
-  tmp = calc(stack(b1[i], b2[i],b3[i],b4[i],b5[i],b6[i],b7[i]), sum, na.rm = TRUE)
+for (i in 1:length(b1.list)){
+  tmp = calc(stack(b1.list[[i]], b2.list[[i]],b3.list[[i]],b4.list[[i]],b5.list[[i]],b6.list[[i]],b7.list[[i]]), sum, na.rm = TRUE)
   tmp = tmp >= 5
   b.list[[i]] <- tmp
+  
+  print(paste(" Finish calculating ", i, " at ", format(Sys.time(), "%a %b %d %X %Y"), sep = " ") )
+  
 }
+
 
 b.list = stack(b.list)
 b.list = calc(b.list, sum, na.rm = TRUE)
