@@ -129,7 +129,6 @@ dlmcd43(product = "MCD43A2",
 
 ##############################################################
 #change hdf to tif files
-#create a MCD43A2tif folder first
 require(rgdal)
 require(raster)
 library(gdalUtils)
@@ -140,16 +139,28 @@ gdal_setInstallation(search_path = "C:\\OSGeo4W64\\bin", rescan = TRUE,
 dir = "D:/users/Zhihua/MODIS/NBARV006"
 setwd(dir)
 
-hdf.fn = list.files(path = "./MCD43A2", pattern = "*.hdf$")
-
-#gdalinfo(paste(dir, "/","MCD43A2/", hdf.fn[1], sep = ""))
-#gdalsrsinfo(paste(dir, "/","MCD43A2/", hdf.fn[1], sep = ""))
+#for MCD43A2, data quality layers
 #data layers 12:18 are data quality for band1 - band7
-
+#create a MCD43A2tif folder first
+hdf.fn = list.files(path = "./MCD43A2", pattern = "*.hdf$")
 for(i in 1:length(hdf.fn)){
   for (j in 12:18){
 gdal_translate(paste("./MCD43A2/", hdf.fn[i],sep = ""),
                paste("./MCD43A2tif/", substr(hdf.fn[i], 1, 24), "quality_band", j-11, ".tif",sep = ""),
+               of="GTiff",
+               output_Raster=TRUE,verbose=TRUE,sd_index=j)
+      }
+      print(paste(" HDF to TIF converting for ", i, "of", length(hdf.fn), " at ", format(Sys.time(), "%a %b %d %X %Y"), sep = " ") )
+      }
+
+#for MCD43A4, reflectance layers
+#data layers 11:17 are reflectance for band1 - band7
+#create a MCD43A4tif folder first
+hdf.fn = list.files(path = "./MCD43A4", pattern = "*.hdf$")
+for(i in 1:length(hdf.fn)){
+  for (j in 11:17){
+gdal_translate(paste("./MCD43A4/", hdf.fn[i],sep = ""),
+               paste("./MCD43A4tif/", substr(hdf.fn[i], 1, 24), "reflectance_band", j-10, ".tif",sep = ""),
                of="GTiff",
                output_Raster=TRUE,verbose=TRUE,sd_index=j)
       }
