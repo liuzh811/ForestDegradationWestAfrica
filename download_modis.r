@@ -63,7 +63,7 @@ dlmcd43 <- function(product, #e.g., MCD43A2, MCD43A4
   d31 = c(paste("0", 1:9, sep = ""), as.character(10:31))
   mon.leap = c(rep("01", 31),rep("02",29), rep("03",31),rep("04",30),rep("05",31),rep("06",30),
                rep("07",31),rep("08",31),rep("09",30),rep("10",31),rep("11",30),rep("12",31))
-  day.leap = c(d31, d31[-c(30,31)], d31, d31[-30],d31,d31[-31],d31,d31,d31[-31],d31,d31[-31],d31)
+  day.leap = c(d31, d31[-c(30,31)], d31, d31[-31],d31,d31[-31],d31,d31,d31[-31],d31,d31[-31],d31)
   mod.date = data.frame(year = as.character(c(rep(2000, 366), rep(2001, 365),rep(2002, 365),rep(2003, 365),rep(2004, 366),
                                               rep(2005, 365),rep(2006, 365),rep(2007, 365),rep(2008, 366),
                                               rep(2009, 365),rep(2010, 365),rep(2011, 365),rep(2012, 366),
