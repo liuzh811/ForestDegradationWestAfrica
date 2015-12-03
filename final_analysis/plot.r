@@ -246,13 +246,17 @@ recls2plot(obs.date2, threshold = c(2, 4, 6, 8, 10, 12), color = "Spectral")
 dev.off()
 
 # for number of clear obs to calculate thre trend
-tmp1 = stack(".\\NBAR_results2\\TCW2.dry.trend.wa.subregion.1.grd")
-tmp2 = stack(".\\NBAR_results2\\TCW2.dry.trend.wa.subregion.2.grd")
-tmp3 = stack(".\\NBAR_results2\\TCW2.dry.trend.wa.subregion.3.grd")
-tmp4 = stack(".\\NBAR_results2\\TCW2.dry.trend.wa.subregion.4.grd")
+#tmp1 = stack(".\\NBAR_results2\\TCW2.dry.trend.wa.subregion.1.grd")
+#tmp2 = stack(".\\NBAR_results2\\TCW2.dry.trend.wa.subregion.2.grd")
+#tmp3 = stack(".\\NBAR_results2\\TCW2.dry.trend.wa.subregion.3.grd")
+#tmp4 = stack(".\\NBAR_results2\\TCW2.dry.trend.wa.subregion.4.grd")
 
-Numb = mosaic(tmp1[[3]], tmp2[[3]], tmp3[[3]], tmp4[[3]],fun=mean)
-Numb.recls = recls2(Numb,threshold = c(4,6,8,10,12))
+#Numb = mosaic(tmp1[[3]], tmp2[[3]], tmp3[[3]], tmp4[[3]],fun=mean)
+
+TCW2.dry <- stack(".\\NBAR_results4\\TCB2.dry.wa.grd")
+TCW2.dry2 = is.na(TCW2.dry)
+TCW2.dry.num = 15 - calc(TCW2.dry2, sum)
+Numb.recls = recls2(TCW2.dry.num,threshold = c(4,6,8,10,12))
 # Numb.recls[lcc.grd != 1] = NA
 Numb.recls = Numb.recls*county_b_ghana.r
 
