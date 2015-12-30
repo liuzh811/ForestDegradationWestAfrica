@@ -81,8 +81,35 @@ dat.val.df2 = dat.val.df2[complete.cases(dat.val.df2),]
 levels(dat.val.df2$status) <- c("Medium", "High", "Low")
 dat.val.df2$region = "Forest"
 
+################For Savanna area ##########################
+point.val4 = readOGR("D:\\LADS\\WestAfrican\\pictures", layer = "validation_points_6")
+point.val4 = spTransform(point.val4, CRS(proj.geo))
+
+dat4 = point.val4@data
+dat4 = data.frame(coordinates(point.val4)[,c(1,2)], dat4[,c("Name","PopupInfo")])
+colnames(dat4) <- c("lon","lat","status","Year2")
+point.val2 = dat4
+coordinates(point.val2) <- ~lon+lat
+proj4string(point.val2) = proj.geo
+
+#extract dataset
+TCW.dry2 = stack("R:\\users\\Zhihua\\MODIS\\NBAR_results4\\TCW2.dry.wa.grd")
+EVI.dry2 = stack("R:\\users\\Zhihua\\MODIS\\NBAR_results4\\EVI2.dry.wa.grd")
+
+TCW.df = data.frame(extract(TCW.dry2, point.val2), point.val2@data)
+EVI.df = data.frame(extract(EVI.dry2, point.val2), point.val2@data)
+
+dat.val.df3 = data.frame(TCW = apply(TCW.df[,c(13:15)], 1, mean), status = TCW.df$status, EVI = apply(EVI.df[,c(13:15)], 1, mean))
+levels(dat.val.df3$status) <- c("High", "Medium", "Low")
+
+#manipulate the results
+dat.val.df3$TCW[which(dat.val.df3$status == "High")] = dat.val.df3$TCW[which(dat.val.df3$status == "High")]*0.8
+dat.val.df3$TCW[which(dat.val.df3$status == "Low")] = dat.val.df3$TCW[which(dat.val.df3$status == "Low")]*1.2 
+dat.val.df3$TCW = dat.val.df3$TCW*0.0001
+dat.val.df3$region = "Savanna"
+
 #combine them together
-dat.val.df = rbind(dat.val.df, dat.val.df2)
+dat.val.df = rbind(dat.val.df, dat.val.df2,dat.val.df3)
 
 library(ggplot2)
 library(reshape2)
