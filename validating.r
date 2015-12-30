@@ -688,6 +688,3 @@ ggplot(dat.val.df.long, aes(factor(variable), value)) +
   
   ggsave("VI_comparsion_wa4.png", width = 9, height = 9, units = "in")
 
-
-
-
