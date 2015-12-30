@@ -14,10 +14,10 @@ proj.geo = "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs +towgs84=0,0,0 "
 county_b = readOGR(dsn="R:\\users\\Zhihua\\TRMM\\gadm_v2_shp",layer="gadm2_westernafrican_dis")
 county_b.geo = spTransform(county_b, CRS(proj.geo))
 
+################For Forest/Savanna Mosaic area ##########################
 #not used for validation_points_5.shp
 point.val3 = readOGR("D:\\LADS\\WestAfrican\\pictures", layer = "validation_points_5")
 #point.val5 = spTransform(point.val3, CRS(proj.geo))
-
 
 #for dataset 3
 #point.val3 = readOGR("D:\\LADS\\WestAfrican\\pictures", layer = "validation_points_4")
@@ -73,7 +73,7 @@ dat.val.df$TCW[which(dat.val.df$status == "Low")] = dat.val.df$TCW[which(dat.val
 dat.val.df$TCW = dat.val.df$TCW*0.0001
 dat.val.df$region = "Forest/Savanna Mosaic"
 
-#for rainforest
+################For Rainforest area ##########################
 dat.val.df2 = data.frame(read.csv("R:\\users\\Zhihua\\MODIS\\NBAR_results2\\dat.val.df.csv")[,-1])
 dat.val.df2 = dat.val.df2[,c("TCW", "EVI", "status")]
 dat.val.df2$TCW = dat.val.df2$TCW*0.0001
