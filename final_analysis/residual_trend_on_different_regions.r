@@ -310,7 +310,7 @@ ggplot(data=lc_rc1.df.long, aes(x=protect, y=value, fill=trend)) +
   theme(axis.ticks = element_blank())+
   theme(axis.title.x = element_text(face="bold", colour="black", size=22),axis.text.x  = element_text(colour="black",size=20))+
   theme(axis.title.y = element_text(face="bold", colour="black", size=22),axis.text.y  = element_text(colour="black",size=20))+
-  theme(legend.position=c(0.75,0.1))+
+  theme(legend.position=c(0.75,0.15))+
   theme(legend.text = element_text(size = 18)) +
   theme(legend.title=element_blank()) +
   theme(strip.text.x = element_text(size=22))+ 
@@ -318,8 +318,8 @@ ggplot(data=lc_rc1.df.long, aes(x=protect, y=value, fill=trend)) +
   #theme(axis.ticks = element_blank(), axis.text.x = element_blank()) + 
   scale_fill_manual(values=color1, 
                     name="",
-                    breaks=levels(lc_rc.df.long$trend),
-                    labels=levels(lc_rc.df.long$trend)) +
+                    breaks=levels(lc_rc1.df.long$trend),
+                    labels=levels(lc_rc1.df.long$trend)) +
   guides(fill=guide_legend(ncol=1))
 
 ggsave(".\\NBAR_results4\\residual.trend_EVI&TCW_Protect&country.png", width = 7.5, height = 9, units = "in")
@@ -373,8 +373,8 @@ ggplot(data=lc_rc1.df.long, aes(x=protect, y=value, fill=trend)) +
   #theme(axis.ticks = element_blank(), axis.text.x = element_blank()) + 
   scale_fill_manual(values=color1, 
                     name="",
-                    breaks=levels(lc_rc.df.long$trend),
-                    labels=levels(lc_rc.df.long$trend)) +
+                    breaks=levels(lc_rc1.df.long$trend),
+                    labels=levels(lc_rc1.df.long$trend)) +
   guides(fill=guide_legend(ncol=1))
 
 ggsave(".\\NBAR_results4\\residual.trend_EVI&TCW_Protect&Ecoregion.png", width = 9, height = 9, units = "in")
