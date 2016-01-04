@@ -271,6 +271,55 @@ ggplot(data=lc_rc1.df.long, aes(x=trend, y=value, fill=trend)) +
 
 ggsave(".\\NBAR_results4\\residual.trend_EVI&TCW_protect.png", width = 10, height = 7.5, units = "in")
 
+#by land cover
+lc_rc1 = lc_rc*100 + TCW.trd2.grd 
+lc_rc1.df = data.frame(freq(lc_rc1))[-22,]
+lc_rc1.df$lc = floor(lc_rc1.df$value/100)
+lc_rc1.df$trend = lc_rc1.df$value - lc_rc1.df$lc*100
+lc_sum = aggregate(count~lc, data = lc_rc1.df, FUN = "sum")
+lc_rc1.df$prop = 100*lc_rc1.df$count/rep(lc_sum$count, each = 3)
+
+lc_rc2 = lc_rc*100 + EVI.trd2.grd 
+lc_rc2.df = data.frame(freq(lc_rc2))[-22,]
+lc_rc2.df$lc = floor(lc_rc2.df$value/100)
+lc_rc2.df$trend = lc_rc2.df$value - lc_rc2.df$lc*100
+lc_sum = aggregate(count~lc, data = lc_rc2.df, FUN = "sum")
+lc_rc2.df$prop = 100*lc_rc2.df$count/rep(lc_sum$count, each = 3)
+
+lc_rc.df = rbind(data.frame(lc_rc1.df, VI = rep("TCW", nrow(lc_rc1.df))), 
+                 data.frame(lc_rc2.df, VI = rep("EVI", nrow(lc_rc2.df))))
+
+lc_rc.df = lc_rc.df[-which(lc_rc.df$lc == 1 | lc_rc.df$lc == 7| lc_rc.df$lc == 5), ] #remove class 1: water; and 7: other class
+#lc_rc.df = lc_rc.df[-which(lc_rc.df$trend == 4), ] #not calculated classes
+lc_rc1.df.long = melt(lc_rc.df[,c("lc","trend","prop","VI")], id.vars=c("lc", "trend","VI"))
+
+lc_rc1.df.long$trend = factor(lc_rc1.df.long$trend)
+levels(lc_rc1.df.long$trend) <- c("Negative", "Positive", "No Trend")
+lc_rc1.df.long$lc = factor(lc_rc1.df.long$lc)
+levels(lc_rc1.df.long$lc) <- clasnames[c(2,3,4,6)]
+levels(lc_rc1.df.long$lc) <- c("Tropical Forest", "Woody Savannas","Savannas","Crop/Natural\n Mosaic")
+
+ggplot(data=lc_rc1.df.long, aes(x=trend, y=value, fill=trend)) +
+  facet_grid(VI ~ lc) +
+  geom_bar(stat="identity", position=position_dodge(), colour="black") +
+  xlab("") + ylab("Percentage of Land Cover") + 
+  #theme(legend.position="none")+
+  theme(legend.position=c(0.075,0.4))+
+  theme(legend.text = element_text(size = 18)) +
+  theme(legend.title=element_blank()) +
+  theme(axis.title.x = element_text(face="bold", colour="black", size=18),axis.text.x  = element_text(colour="black",size=18))+
+  theme(axis.title.y = element_text(face="bold", colour="black", size=18),axis.text.y  = element_text(colour="black",size=18))+
+  theme(strip.text.x = element_text(size=18))+
+  theme(strip.text.y = element_text(size=18)) +
+  theme(axis.ticks = element_blank(), axis.text.x = element_blank())+
+  scale_fill_manual(values=color1, 
+                    name="",
+                    breaks=levels(lc_rc1.df.long$trend),
+                    labels=levels(lc_rc1.df.long$trend))
+
+ggsave(".\\NBAR_results4\\residual.trend_biomes_EVI&TCW-2.png", width = 10, height = 7.5, units = "in")
+
+
 # by protected status * country
 lc_rc1 = county_b_ghana.grd*10000 + protected.grd*100 + TCW.trd2.grd 
 lc_rc1.df = data.frame(freq(lc_rc1))[-40,] #
@@ -378,3 +427,57 @@ ggplot(data=lc_rc1.df.long, aes(x=protect, y=value, fill=trend)) +
   guides(fill=guide_legend(ncol=1))
 
 ggsave(".\\NBAR_results4\\residual.trend_EVI&TCW_Protect&Ecoregion.png", width = 9, height = 9, units = "in")
+
+
+# by protected status * land cover
+lc_rc1 = lc_rc*10000 + protected.grd*100 + TCW.trd2.grd 
+lc_rc1.df = data.frame(freq(lc_rc1))[-55,] #
+lc_rc1.df$lc = floor(lc_rc1.df$value/10000)
+lc_rc1.df$protect = floor((lc_rc1.df$value - lc_rc1.df$lc*10000)/100)
+lc_rc1.df$trend = lc_rc1.df$value - lc_rc1.df$lc*10000-lc_rc1.df$protect*100
+lc_sum = aggregate(count~protect+lc, data = lc_rc1.df, FUN = "sum")
+lc_rc1.df$prop = 100*lc_rc1.df$count/rep(lc_sum$count, each = 3)
+
+lc_rc2 = lc_rc*10000 + protected.grd*100 + EVI.trd2.grd 
+lc_rc2.df = data.frame(freq(lc_rc2))[-55,]
+lc_rc2.df$lc = floor(lc_rc2.df$value/10000)
+lc_rc2.df$protect = floor((lc_rc2.df$value - lc_rc2.df$lc*10000)/100)
+lc_rc2.df$trend = lc_rc2.df$value - lc_rc2.df$lc*10000-lc_rc2.df$protect*100
+lc_sum = aggregate(count~protect+lc, data = lc_rc2.df, FUN = "sum")
+lc_rc2.df$prop = 100*lc_rc2.df$count/rep(lc_sum$count, each = 3)
+
+lc_rc.df = rbind(data.frame(lc_rc1.df, VI = "TCW"), 
+                 data.frame(lc_rc2.df, VI = "EVI"))
+
+lc_rc.df = lc_rc.df[-which(lc_rc.df$lc == 1 | lc_rc.df$lc == 7| lc_rc.df$lc == 5), ] #remove class 1: water; and 7: other class
+lc_rc1.df.long = melt(lc_rc.df[,c("lc","protect","trend","prop","VI")], id.vars=c("lc", "protect","trend","VI"))
+
+lc_rc1.df.long$trend = factor(lc_rc1.df.long$trend)
+levels(lc_rc1.df.long$trend) <- c("Negative", "Positive", "No Trend")
+lc_rc1.df.long$lc = factor(lc_rc1.df.long$lc)
+levels(lc_rc1.df.long$lc) <- c("Tropical Forest", "Woody Savannas","Savannas","Crop/Natural\n Mosaic")
+lc_rc1.df.long$protect = factor(lc_rc1.df.long$protect)
+levels(lc_rc1.df.long$protect) <- c("Reserve", "Eco-Reserve","Non-Protected")
+
+color1 = c("#fb6a4a", "#67a9cf", "#cccccc")
+
+ggplot(data=lc_rc1.df.long, aes(x=protect, y=value, fill=trend)) +
+  geom_bar(stat="identity", position=position_dodge()) + 
+  facet_grid(lc ~ VI) +
+  xlab("") + ylab("Percentage of Land Cover") +
+  theme(axis.ticks = element_blank())+
+  theme(axis.title.x = element_text(face="bold", colour="black", size=22),axis.text.x  = element_text(colour="black",size=20))+
+  theme(axis.title.y = element_text(face="bold", colour="black", size=22),axis.text.y  = element_text(colour="black",size=20))+
+  theme(legend.position=c(0.75,0.15))+
+  theme(legend.text = element_text(size = 18)) +
+  theme(legend.title=element_blank()) +
+  theme(strip.text.x = element_text(size=22))+ 
+  theme(strip.text.y = element_text(size=22))+ 
+  #theme(axis.ticks = element_blank(), axis.text.x = element_blank()) + 
+  scale_fill_manual(values=color1, 
+                    name="",
+                    breaks=levels(lc_rc1.df.long$trend),
+                    labels=levels(lc_rc1.df.long$trend)) +
+  guides(fill=guide_legend(ncol=1))
+
+ggsave(".\\NBAR_results4\\residual.trend_EVI&TCW_Protect&landcover.png", width = 9, height = 9, units = "in")
