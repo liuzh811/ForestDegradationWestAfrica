@@ -508,11 +508,15 @@ legendbrks2_change_trd <- 1:4 - 0.5
 arg1_trd <- list(at=seq(1,4,1), labels=c("Negative","Positive","No Trend","Not Calculated")) #these are the class names
 labels_trd = c("Negative","Positive","No Trend","Not Calculated")
 color1_trd = c("#e66101", "#1a9641","#ffffbf","#2b83ba")
+color1_trd=c("#fb6a4a","#67a9cf","#cccccc","#74c476")
 
 regionid = c(2,4,7)
 # plot in one figure
 
-par(mfrow=c(3,3),mar=c(0, 0, 0, 0))
+
+png(file = paste("NBAR_results4/residual.Highlighted_region", "combined.png", sep = ""), width = 3000, height = 3000, units = "px", res = 300)
+
+par(mfrow=c(3,3),mar=c(0.02, 0.02, 0.02, 0.02))
 
 for (i in regionid){
   TCW.trd2.grd1 = crop(TCW.trd2.grd, regions[i,])
@@ -542,5 +546,6 @@ for (i in regionid){
        box=FALSE,
   )
   plot(county_b_ghana, add = TRUE)
-
 }
+
+dev.off()
