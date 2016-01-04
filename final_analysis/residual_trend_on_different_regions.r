@@ -80,5 +80,247 @@ dev.off()
 
 
 ########## section 3: calculate trend on different regions ################
+library("raster")
+library("dismo")
+library("sp")
+library("rgdal")
+library("reshape2")
+library("ggplot2")
 
+
+setwd("R:/users/Zhihua/MODIS")
+
+TCW.trd2.grd = raster("R:/users/Zhihua/MODIS/NBAR_results4/Residual.TCW2.dry.trend.wa2.tif")
+EVI.trd2.grd = raster("R:/users/Zhihua/MODIS/NBAR_results4/Residual.EVI2.dry.trend.wa2.tif")
+lc_rc = raster(".\\NBAR_results4\\lc_rc.wa.tif")
+county_b_ghana.r = raster(".\\NBAR_results4\\studyarea.mask.tif")
+
+#read into shapefiles, countries
+proj.geo = "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs +towgs84=0,0,0 "
+county_b = readOGR(dsn="R:\\users\\Zhihua\\TRMM\\gadm_v2_shp",layer="gadm2_westernafrican_dis")
+county_b.geo = spTransform(county_b, CRS(proj.geo))
+
+county_b_ghana = county_b.geo[which(county_b.geo$NAME_0=="Ghana"|county_b.geo$NAME_0=="CÃ´te d'Ivoire"|
+                                      county_b.geo$NAME_0=="Sierra Leone"|county_b.geo$NAME_0=="Liberia" 
+                                    |county_b.geo$NAME_0=="Guinea"),]
+
+county_b_ghana.grd = rasterize(county_b_ghana, county_b_ghana.r)
+county_b_ghana.grd = county_b_ghana.grd*county_b_ghana.r #1:"CÃ´te d'Ivoire", 2:"Ghana", 3:"Guinea", 4:Liberia, 5:Sierra Leone
+
+#protected area 
+#1: protected, 2: strictly protect (Eco-protected) 3:non-protected
+protected = readOGR(dsn="R:\\users\\Zhihua\\GeoData_West Africa\\protectarea",layer="protected_areas_west_africa2")
+
+protected@data$status = 1 #
+protected@data$status[which(protected@data$IUCN_CAT == "Ia" | 
+                              protected@data$IUCN_CAT == "II" | protected@data$IUCN_CAT == "IV")] = 2
+
+protected.grd = rasterize(protected, county_b_ghana.r, field = "status")
+protected.grd = protected.grd*county_b_ghana.r #protected
+protected.grd[is.na(protected.grd)] = 3  #3 non-protected
+protected.grd = protected.grd*county_b_ghana.r 
+
+#read into ecoregion; ECO_NAME2: 1: west guinea forest; 2: east guinea foreste; 3: mosaic, 4: savvannas,5:other
+eco.sp = readOGR(dsn="R:\\users\\Zhihua\\WWF_ecoregion\\official_teow\\official",layer="wwf_terr_ecos1")
+eco.sp.grd = rasterize(eco.sp, county_b_ghana.r, field = eco.sp@data$ECO_NAME2)
+eco.sp.grd = eco.sp.grd*county_b_ghana.r
+
+#statistics
+# by country
+lc_rc1 = county_b_ghana.grd*100 + TCW.trd2.grd 
+lc_rc1.df = data.frame(freq(lc_rc1))[-16,]
+lc_rc1.df$lc = floor(lc_rc1.df$value/100)
+lc_rc1.df$trend = lc_rc1.df$value - lc_rc1.df$lc*100
+lc_sum = aggregate(count~lc, data = lc_rc1.df, FUN = "sum")
+lc_rc1.df$prop = 100*lc_rc1.df$count/rep(lc_sum$count, each = 3)
+
+lc_rc2 = county_b_ghana.grd*100 + EVI.trd2.grd 
+lc_rc2.df = data.frame(freq(lc_rc2))[-16,]
+lc_rc2.df$lc = floor(lc_rc2.df$value/100)
+lc_rc2.df$trend = lc_rc2.df$value - lc_rc2.df$lc*100
+lc_sum = aggregate(count~lc, data = lc_rc2.df, FUN = "sum")
+lc_rc2.df$prop = 100*lc_rc2.df$count/rep(lc_sum$count, each = 3)
+
+lc_rc.df = rbind(data.frame(lc_rc1.df, VI = rep("TCW", nrow(lc_rc1.df))), 
+                 data.frame(lc_rc2.df, VI = rep("EVI", nrow(lc_rc2.df))))
+
+lc_rc1.df.long = melt(lc_rc.df[,c("lc","trend","prop","VI")], id.vars=c("lc", "trend","VI"))
+
+lc_rc1.df.long$trend = factor(lc_rc1.df.long$trend)
+levels(lc_rc1.df.long$trend) <- c("Negative", "Positive", "No Trend")
+lc_rc1.df.long$lc = factor(lc_rc1.df.long$lc)
+levels(lc_rc1.df.long$lc) <- c("CÃ´te d'Ivoire", "Ghana", "Guinea", "Liberia", "Sierra Leone")
+
+color1 = c("#fb6a4a", "#67a9cf", "#cccccc")
+
+ggplot(data=lc_rc1.df.long, aes(x=trend, y=value, fill=trend)) +
+  facet_grid(VI ~ lc) +
+  geom_bar(stat="identity", position=position_dodge(), colour="black") +
+  xlab("") + ylab("Percentage of Land Cover") + 
+  #theme(legend.position="none")+
+  theme(legend.position=c(0.075,0.4))+
+  theme(legend.text = element_text(size = 18)) +
+  theme(legend.title=element_blank()) +
+  theme(axis.title.x = element_text(face="bold", colour="black", size=18),axis.text.x  = element_text(colour="black",size=18))+
+  theme(axis.title.y = element_text(face="bold", colour="black", size=18),axis.text.y  = element_text(colour="black",size=18))+
+  theme(strip.text.x = element_text(size=18))+
+  theme(strip.text.y = element_text(size=18)) +
+  theme(axis.ticks = element_blank(), axis.text.x = element_blank())+
+  scale_fill_manual(values=color1, 
+                    name="",
+                    breaks=levels(lc_rc1.df.long$trend),
+                    labels=levels(lc_rc1.df.long$trend))
+
+ggsave(".\\NBAR_results4\\residual.trend_EVI&TCW_country.png", width = 10, height = 7.5, units = "in")
+
+# by ecoregion
+lc_rc1 = eco.sp.grd*100 + TCW.trd2.grd 
+lc_rc1.df = data.frame(freq(lc_rc1))[-16,]
+lc_rc1.df$lc = floor(lc_rc1.df$value/100)
+lc_rc1.df$trend = lc_rc1.df$value - lc_rc1.df$lc*100
+lc_sum = aggregate(count~lc, data = lc_rc1.df, FUN = "sum")
+lc_rc1.df$prop = 100*lc_rc1.df$count/rep(lc_sum$count, each = 3)
+
+lc_rc2 = eco.sp.grd*100 + EVI.trd2.grd 
+lc_rc2.df = data.frame(freq(lc_rc2))[-16,]
+lc_rc2.df$lc = floor(lc_rc2.df$value/100)
+lc_rc2.df$trend = lc_rc2.df$value - lc_rc2.df$lc*100
+lc_sum = aggregate(count~lc, data = lc_rc2.df, FUN = "sum")
+lc_rc2.df$prop = 100*lc_rc2.df$count/rep(lc_sum$count, each = 3)
+
+lc_rc.df = rbind(data.frame(lc_rc1.df, VI = rep("TCW", nrow(lc_rc1.df))), 
+                 data.frame(lc_rc2.df, VI = rep("EVI", nrow(lc_rc2.df))))
+
+lc_rc.df = lc_rc.df[-which(lc_rc.df$lc == 5), ] #remove class 5
+
+
+lc_rc1.df.long = melt(lc_rc.df[,c("lc","trend","prop","VI")], id.vars=c("lc", "trend","VI"))
+
+lc_rc1.df.long$trend = factor(lc_rc1.df.long$trend)
+levels(lc_rc1.df.long$trend) <- c("Negative", "Positive", "No Trend")
+lc_rc1.df.long$lc = factor(lc_rc1.df.long$lc)
+levels(lc_rc1.df.long$lc) <- c("Western Guinean\n Lowland Forests", "Eastern Guinean\n Forests", 
+                               "Guinean Forest\n-Savanna Mosaic", "West Sudanian\n Savanna")
+
+color1 = c("#fb6a4a", "#67a9cf", "#cccccc")
+
+ggplot(data=lc_rc1.df.long, aes(x=trend, y=value, fill=trend)) +
+  facet_grid(VI ~ lc) +
+  geom_bar(stat="identity", position=position_dodge(), colour="black") +
+  xlab("") + ylab("Percentage of Land Cover") + 
+  #theme(legend.position="none")+
+  theme(legend.position=c(0.075,0.4))+
+  theme(legend.text = element_text(size = 18)) +
+  theme(legend.title=element_blank()) +
+  theme(axis.title.x = element_text(face="bold", colour="black", size=18),axis.text.x  = element_text(colour="black",size=18))+
+  theme(axis.title.y = element_text(face="bold", colour="black", size=18),axis.text.y  = element_text(colour="black",size=18))+
+  theme(strip.text.x = element_text(size=18))+
+  theme(strip.text.y = element_text(size=18)) +
+  theme(axis.ticks = element_blank(), axis.text.x = element_blank())+
+  scale_fill_manual(values=color1, 
+                    name="",
+                    breaks=levels(lc_rc1.df.long$trend),
+                    labels=levels(lc_rc1.df.long$trend))
+
+ggsave(".\\NBAR_results4\\residual.trend_EVI&TCW_ecoregion.png", width = 10, height = 7.5, units = "in")
+
+# by protected status
+lc_rc1 = protected.grd*100 + TCW.trd2.grd 
+lc_rc1.df = data.frame(freq(lc_rc1))[-10,]
+lc_rc1.df$lc = floor(lc_rc1.df$value/100)
+lc_rc1.df$trend = lc_rc1.df$value - lc_rc1.df$lc*100
+lc_sum = aggregate(count~lc, data = lc_rc1.df, FUN = "sum")
+lc_rc1.df$prop = 100*lc_rc1.df$count/rep(lc_sum$count, each = 3)
+
+lc_rc2 = protected.grd*100 + EVI.trd2.grd 
+lc_rc2.df = data.frame(freq(lc_rc2))[-10,]
+lc_rc2.df$lc = floor(lc_rc2.df$value/100)
+lc_rc2.df$trend = lc_rc2.df$value - lc_rc2.df$lc*100
+lc_sum = aggregate(count~lc, data = lc_rc2.df, FUN = "sum")
+lc_rc2.df$prop = 100*lc_rc2.df$count/rep(lc_sum$count, each = 3)
+
+lc_rc.df = rbind(data.frame(lc_rc1.df, VI = rep("TCW", nrow(lc_rc1.df))), 
+                 data.frame(lc_rc2.df, VI = rep("EVI", nrow(lc_rc2.df))))
+
+lc_rc1.df.long = melt(lc_rc.df[,c("lc","trend","prop","VI")], id.vars=c("lc", "trend","VI"))
+
+lc_rc1.df.long$trend = factor(lc_rc1.df.long$trend)
+levels(lc_rc1.df.long$trend) <- c("Negative", "Positive", "No Trend")
+lc_rc1.df.long$lc = factor(lc_rc1.df.long$lc)
+levels(lc_rc1.df.long$lc) <- c("Reserve", "Eco-Reserve","Non-Protected")
+
+color1 = c("#fb6a4a", "#67a9cf", "#cccccc")
+
+ggplot(data=lc_rc1.df.long, aes(x=trend, y=value, fill=trend)) +
+  facet_grid(VI ~ lc) +
+  geom_bar(stat="identity", position=position_dodge(), colour="black") +
+  xlab("") + ylab("Percentage of Land Cover") + 
+  #theme(legend.position="none")+
+  theme(legend.position=c(0.075,0.4))+
+  theme(legend.text = element_text(size = 18)) +
+  theme(legend.title=element_blank()) +
+  theme(axis.title.x = element_text(face="bold", colour="black", size=18),axis.text.x  = element_text(colour="black",size=18))+
+  theme(axis.title.y = element_text(face="bold", colour="black", size=18),axis.text.y  = element_text(colour="black",size=18))+
+  theme(strip.text.x = element_text(size=18))+
+  theme(strip.text.y = element_text(size=18)) +
+  theme(axis.ticks = element_blank(), axis.text.x = element_blank())+
+  scale_fill_manual(values=color1, 
+                    name="",
+                    breaks=levels(lc_rc1.df.long$trend),
+                    labels=levels(lc_rc1.df.long$trend))
+
+ggsave(".\\NBAR_results4\\residual.trend_EVI&TCW_protect.png", width = 10, height = 7.5, units = "in")
+
+# by protected status * country
+lc_rc1 = county_b_ghana.grd*10000 + protected.grd*100 + TCW.trd2.grd 
+lc_rc1.df = data.frame(freq(lc_rc1))[-31,]
+lc_rc1.df$lc = floor(lc_rc1.df$value/10000)
+lc_rc1.df$protect = floor((lc_rc1.df$value - lc_rc1.df$lc*10000)/100)
+lc_rc1.df$trend = lc_rc1.df$value - lc_rc1.df$lc*10000-lc_rc1.df$protect*100
+lc_sum = aggregate(count~protect+lc, data = lc_rc1.df, FUN = "sum")
+lc_rc1.df$prop = 100*lc_rc1.df$count/rep(lc_sum$count, each = 3)
+
+lc_rc2 = county_b_ghana.grd*10000 + protected.grd*100 + EVI.trd2.grd 
+lc_rc2.df = data.frame(freq(lc_rc2))[-31,]
+lc_rc2.df$lc = floor(lc_rc2.df$value/10000)
+lc_rc2.df$protect = floor((lc_rc2.df$value - lc_rc2.df$lc*10000)/100)
+lc_rc2.df$trend = lc_rc2.df$value - lc_rc2.df$lc*10000-lc_rc2.df$protect*100
+lc_sum = aggregate(count~protect+lc, data = lc_rc2.df, FUN = "sum")
+lc_rc2.df$prop = 100*lc_rc2.df$count/rep(lc_sum$count, each = 3)
+
+
+lc_rc.df = rbind(data.frame(lc_rc1.df, VI = "TCW"), 
+                 data.frame(lc_rc2.df, VI = "EVI"))
+
+lc_rc1.df.long = melt(lc_rc.df[,c("lc","protect","trend","prop","VI")], id.vars=c("lc", "protect","trend","VI"))
+
+lc_rc1.df.long$trend = factor(lc_rc1.df.long$trend)
+levels(lc_rc1.df.long$trend) <- c("Negative", "Positive", "No Trend")
+lc_rc1.df.long$lc = factor(lc_rc1.df.long$lc)
+levels(lc_rc1.df.long$lc) <- c("CÃ´te d'Ivoire", "Ghana", "Guinea", "Liberia", "Sierra Leone")
+lc_rc1.df.long$protect = factor(lc_rc1.df.long$protect)
+levels(lc_rc1.df.long$protect) <- c("Protect", "Non-Protect")
+
+color1 = c("#fb6a4a", "#67a9cf", "#cccccc")
+
+ggplot(data=lc_rc1.df.long, aes(x=protect, y=value, fill=trend)) +
+  geom_bar(stat="identity", position=position_dodge()) + 
+  facet_grid(lc ~ VI) +
+  xlab("") + ylab("Percentage of Land Cover") +
+  theme(axis.ticks = element_blank())+
+  theme(axis.title.x = element_text(face="bold", colour="black", size=22),axis.text.x  = element_text(colour="black",size=20))+
+  theme(axis.title.y = element_text(face="bold", colour="black", size=22),axis.text.y  = element_text(colour="black",size=20))+
+  theme(legend.position=c(0.75,0.1))+
+  theme(legend.text = element_text(size = 18)) +
+  theme(legend.title=element_blank()) +
+  theme(strip.text.x = element_text(size=22))+ 
+  theme(strip.text.y = element_text(size=22))+ 
+  #theme(axis.ticks = element_blank(), axis.text.x = element_blank()) + 
+  scale_fill_manual(values=color1, 
+                    name="",
+                    breaks=levels(lc_rc.df.long$trend),
+                    labels=levels(lc_rc.df.long$trend)) +
+  guides(fill=guide_legend(ncol=1))
+
+ggsave(".\\NBAR_results4\\residual.trend_EVI&TCW_Protect&country.png", width = 7.5, height = 9, units = "in")
 
