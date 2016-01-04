@@ -349,17 +349,18 @@ lc_rc1.df.long$lc = factor(lc_rc1.df.long$lc)
 levels(lc_rc1.df.long$lc) <- c("CÃ´te d'Ivoire", "Ghana", "Guinea", "Liberia", "Sierra Leone")
 lc_rc1.df.long$protect = factor(lc_rc1.df.long$protect)
 levels(lc_rc1.df.long$protect) <- c("Reserve", "Eco-Reserve","Non-Protected")
+levels(lc_rc1.df.long$protect) <- c("R", "ER","NP")
 
 color1 = c("#fb6a4a", "#67a9cf", "#cccccc")
 
 ggplot(data=lc_rc1.df.long, aes(x=protect, y=value, fill=trend)) +
   geom_bar(stat="identity", position=position_dodge()) + 
-  facet_grid(lc ~ VI) +
+  facet_grid(VI ~ lc) +
   xlab("") + ylab("Percentage of Land Cover") +
   theme(axis.ticks = element_blank())+
   theme(axis.title.x = element_text(face="bold", colour="black", size=22),axis.text.x  = element_text(colour="black",size=20))+
   theme(axis.title.y = element_text(face="bold", colour="black", size=22),axis.text.y  = element_text(colour="black",size=20))+
-  theme(legend.position=c(0.75,0.15))+
+  theme(legend.position=c(0.6,0.45))+
   theme(legend.text = element_text(size = 18)) +
   theme(legend.title=element_blank()) +
   theme(strip.text.x = element_text(size=22))+ 
@@ -371,7 +372,7 @@ ggplot(data=lc_rc1.df.long, aes(x=protect, y=value, fill=trend)) +
                     labels=levels(lc_rc1.df.long$trend)) +
   guides(fill=guide_legend(ncol=1))
 
-ggsave(".\\NBAR_results4\\residual.trend_EVI&TCW_Protect&country.png", width = 7.5, height = 9, units = "in")
+ggsave(".\\NBAR_results4\\residual.trend_EVI&TCW_Protect&country.png", width = 12, height = 9, units = "in")
 
 # by protected status * ecoregions
 lc_rc1 = eco.sp.grd*10000 + protected.grd*100 + TCW.trd2.grd 
@@ -404,17 +405,18 @@ levels(lc_rc1.df.long$lc) <- c("Western Guinean\n Lowland Forests", "Eastern Gui
                                "Guinean Forest\n-Savanna Mosaic", "West Sudanian\n Savanna")
 lc_rc1.df.long$protect = factor(lc_rc1.df.long$protect)
 levels(lc_rc1.df.long$protect) <- c("Reserve", "Eco-Reserve","Non-Protected")
+levels(lc_rc1.df.long$protect) <- c("R", "ER","NP")
 
 color1 = c("#fb6a4a", "#67a9cf", "#cccccc")
 
 ggplot(data=lc_rc1.df.long, aes(x=protect, y=value, fill=trend)) +
   geom_bar(stat="identity", position=position_dodge()) + 
-  facet_grid(lc ~ VI) +
+  facet_grid(VI ~ lc) +
   xlab("") + ylab("Percentage of Land Cover") +
   theme(axis.ticks = element_blank())+
   theme(axis.title.x = element_text(face="bold", colour="black", size=22),axis.text.x  = element_text(colour="black",size=20))+
   theme(axis.title.y = element_text(face="bold", colour="black", size=22),axis.text.y  = element_text(colour="black",size=20))+
-  theme(legend.position=c(0.75,0.1))+
+  theme(legend.position=c(0.7,0.45))+
   theme(legend.text = element_text(size = 18)) +
   theme(legend.title=element_blank()) +
   theme(strip.text.x = element_text(size=22))+ 
@@ -426,7 +428,7 @@ ggplot(data=lc_rc1.df.long, aes(x=protect, y=value, fill=trend)) +
                     labels=levels(lc_rc1.df.long$trend)) +
   guides(fill=guide_legend(ncol=1))
 
-ggsave(".\\NBAR_results4\\residual.trend_EVI&TCW_Protect&Ecoregion.png", width = 9, height = 9, units = "in")
+ggsave(".\\NBAR_results4\\residual.trend_EVI&TCW_Protect&Ecoregion.png", width = 12, height = 9, units = "in")
 
 
 # by protected status * land cover
@@ -458,17 +460,18 @@ lc_rc1.df.long$lc = factor(lc_rc1.df.long$lc)
 levels(lc_rc1.df.long$lc) <- c("Tropical Forest", "Woody Savannas","Savannas","Crop/Natural\n Mosaic")
 lc_rc1.df.long$protect = factor(lc_rc1.df.long$protect)
 levels(lc_rc1.df.long$protect) <- c("Reserve", "Eco-Reserve","Non-Protected")
+levels(lc_rc1.df.long$protect) <- c("R", "ER","NP")
 
 color1 = c("#fb6a4a", "#67a9cf", "#cccccc")
 
 ggplot(data=lc_rc1.df.long, aes(x=protect, y=value, fill=trend)) +
   geom_bar(stat="identity", position=position_dodge()) + 
-  facet_grid(lc ~ VI) +
+  facet_grid(VI ~ lc) +
   xlab("") + ylab("Percentage of Land Cover") +
   theme(axis.ticks = element_blank())+
   theme(axis.title.x = element_text(face="bold", colour="black", size=22),axis.text.x  = element_text(colour="black",size=20))+
   theme(axis.title.y = element_text(face="bold", colour="black", size=22),axis.text.y  = element_text(colour="black",size=20))+
-  theme(legend.position=c(0.75,0.15))+
+  theme(legend.position=c(0.75,0.45))+
   theme(legend.text = element_text(size = 18)) +
   theme(legend.title=element_blank()) +
   theme(strip.text.x = element_text(size=22))+ 
@@ -478,6 +481,66 @@ ggplot(data=lc_rc1.df.long, aes(x=protect, y=value, fill=trend)) +
                     name="",
                     breaks=levels(lc_rc1.df.long$trend),
                     labels=levels(lc_rc1.df.long$trend)) +
-  guides(fill=guide_legend(ncol=1))
+  guides(fill=guide_legend(ncol=1)) 
 
-ggsave(".\\NBAR_results4\\residual.trend_EVI&TCW_Protect&landcover.png", width = 9, height = 9, units = "in")
+ggsave(".\\NBAR_results4\\residual.trend_EVI&TCW_Protect&landcover.png", width = 12, height = 9, units = "in")
+
+
+#plot some highlighted area
+regions = readOGR(dsn="R:/users/Zhihua/MODIS/NBAR_results3", layer="Val_regions")
+projection(regions) <- proj.geo 
+regions.sin <- spTransform(regions, CRS(proj.sin)) 
+
+TCW.trd2.grd = raster("R:/users/Zhihua/MODIS/NBAR_results4/Residual.TCW2.dry.trend.wa2.tif")
+EVI.trd2.grd = raster("R:/users/Zhihua/MODIS/NBAR_results4/Residual.EVI2.dry.trend.wa2.tif")
+#read into mat hansen's landsat forest loss and reclassify
+landsat_netloss = raster("./GlobalForestCover/Hansen_GFC2015_net_loss_modis_grid.tif")
+
+landsat_netloss_rcls = recls2(landsat_netloss,threshold = c(0, 0.05, 0.1, 0.2, 0.5))
+breaks2_change_hansen <- 0:6        
+legendbrks2_change_hansen <- 1:6 - 0.5
+color1_hansen=c('#66c2a4','#fcbba1','#fc9272','#fb6a4a','#de2d26','#a50f15')
+labels_hansen = c("No Loss","0-0.05","0.05-0.1","0.1-0.2","0.2-0.5",">0.5")
+
+#trend color scheme
+breaks2_change_trd <- 0:4        
+legendbrks2_change_trd <- 1:4 - 0.5
+arg1_trd <- list(at=seq(1,4,1), labels=c("Negative","Positive","No Trend","Not Calculated")) #these are the class names
+labels_trd = c("Negative","Positive","No Trend","Not Calculated")
+color1_trd = c("#e66101", "#1a9641","#ffffbf","#2b83ba")
+
+regionid = c(2,4,7)
+# plot in one figure
+
+par(mfrow=c(3,3),mar=c(0, 0, 0, 0))
+
+for (i in regionid){
+  TCW.trd2.grd1 = crop(TCW.trd2.grd, regions[i,])
+  EVI.trd2.grd1 = crop(EVI.trd2.grd, regions[i,])
+  landsat_netloss_rcls1 = crop(landsat_netloss_rcls, regions[i,])
+
+  #tcw
+  plot(TCW.trd2.grd1,col = color1_trd[c(1:3)], 
+       legend=FALSE,
+       axes=FALSE,
+       box=FALSE,
+  )
+  plot(county_b_ghana, add = TRUE)
+  #evi
+  plot(EVI.trd2.grd1,col = color1_trd[c(1:3)], 
+       legend=FALSE,
+       axes=FALSE,
+       box=FALSE,
+  )
+  plot(county_b_ghana, add = TRUE)
+ 
+#landsat
+  
+  plot(landsat_netloss_rcls1,col = color1_hansen[sort(unique(landsat_netloss_rcls1))], 
+       legend=FALSE,
+       axes=FALSE,
+       box=FALSE,
+  )
+  plot(county_b_ghana, add = TRUE)
+
+}
