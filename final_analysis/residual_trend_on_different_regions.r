@@ -549,3 +549,6 @@ for (i in regionid){
 }
 
 dev.off()
+
+tcw.trd.df = data.frame(freq(TCW.trd2.grd))[-4,]; tcw.trd.df$prop = tcw.trd.df$count/sum(tcw.trd.df$count)
+evi.trd.df = data.frame(freq(EVI.trd2.grd))[-4,]; evi.trd.df$prop = evi.trd.df$count/sum(evi.trd.df$count)
