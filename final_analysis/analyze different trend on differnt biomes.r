@@ -31,11 +31,12 @@ county_b_ghana.grd = county_b_ghana.grd*county_b_ghana.r #1:"CÃ´te d'Ivoire", 
 #protected area #1: protected-Reserve, 2: protected-Eco-Reserve 3:non-protected
 protected = readOGR(dsn="R:\\users\\Zhihua\\GeoData_West Africa\\protectarea",layer="protected_areas_west_africa2")
 
-protected@data$status = 1 #
-protected@data$status[which(protected@data$IUCN_CAT == "Ia" | 
-                              protected@data$IUCN_CAT == "II" | protected@data$IUCN_CAT == "IV")] = 2
+# protected@data$status = 1 #
+# protected@data$status[which(protected@data$IUCN_CAT == "Ia" | 
+#                               protected@data$IUCN_CAT == "II" | protected@data$IUCN_CAT == "IV")] = 2
 
-protected.grd = rasterize(protected, county_b_ghana.r, field = "status")
+# protected.grd = rasterize(protected, county_b_ghana.r, field = "status")
+protected.grd = rasterize(protected, county_b_ghana.r, field = "status2")
 protected.grd = protected.grd*county_b_ghana.r #protected
 protected.grd[is.na(protected.grd)] = 3  #3 non-protected
 protected.grd = protected.grd*county_b_ghana.r 
