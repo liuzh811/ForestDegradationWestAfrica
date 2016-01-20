@@ -193,7 +193,7 @@ ggsave(".\\NBAR_results4\\trend_EVI&TCW_protect.png", width = 10, height = 7.5, 
 
 # by protected status * country
 lc_rc1 = county_b_ghana.grd*10000 + protected.grd*100 + TCW.trd2.grd 
-lc_rc1.df = data.frame(freq(lc_rc1))[-40,] #
+lc_rc1.df = data.frame(freq(lc_rc1))[-43,] #
 lc_rc1.df$lc = floor(lc_rc1.df$value/10000)
 lc_rc1.df$protect = floor((lc_rc1.df$value - lc_rc1.df$lc*10000)/100)
 lc_rc1.df$trend = lc_rc1.df$value - lc_rc1.df$lc*10000-lc_rc1.df$protect*100
@@ -201,13 +201,12 @@ lc_sum = aggregate(count~protect+lc, data = lc_rc1.df, FUN = "sum")
 lc_rc1.df$prop = 100*lc_rc1.df$count/rep(lc_sum$count, each = 3)
 
 lc_rc2 = county_b_ghana.grd*10000 + protected.grd*100 + EVI.trd2.grd 
-lc_rc2.df = data.frame(freq(lc_rc2))[-40,]
+lc_rc2.df = data.frame(freq(lc_rc2))[-43,]
 lc_rc2.df$lc = floor(lc_rc2.df$value/10000)
 lc_rc2.df$protect = floor((lc_rc2.df$value - lc_rc2.df$lc*10000)/100)
 lc_rc2.df$trend = lc_rc2.df$value - lc_rc2.df$lc*10000-lc_rc2.df$protect*100
 lc_sum = aggregate(count~protect+lc, data = lc_rc2.df, FUN = "sum")
 lc_rc2.df$prop = 100*lc_rc2.df$count/rep(lc_sum$count, each = 3)
-
 
 lc_rc.df = rbind(data.frame(lc_rc1.df, VI = "TCW"), 
                  data.frame(lc_rc2.df, VI = "EVI"))
@@ -238,8 +237,8 @@ ggplot(data=lc_rc1.df.long, aes(x=protect, y=value, fill=trend)) +
   #theme(axis.ticks = element_blank(), axis.text.x = element_blank()) + 
   scale_fill_manual(values=color1, 
                     name="",
-                    breaks=levels(lc_rc.df.long$trend),
-                    labels=levels(lc_rc.df.long$trend)) +
+                    breaks=levels(lc_rc1.df.long$trend),
+                    labels=levels(lc_rc1.df.long$trend)) +
   guides(fill=guide_legend(ncol=1))
 
 ggsave(".\\NBAR_results4\\trend_EVI&TCW_Protect&country.png", width = 7.5, height = 9, units = "in")
@@ -293,8 +292,8 @@ ggplot(data=lc_rc1.df.long, aes(x=protect, y=value, fill=trend)) +
   #theme(axis.ticks = element_blank(), axis.text.x = element_blank()) + 
   scale_fill_manual(values=color1, 
                     name="",
-                    breaks=levels(lc_rc.df.long$trend),
-                    labels=levels(lc_rc.df.long$trend)) +
+                    breaks=levels(lc_rc1.df.long$trend),
+                    labels=levels(lc_rc1.df.long$trend)) +
   guides(fill=guide_legend(ncol=1))
 
 ggsave(".\\NBAR_results4\\trend_EVI&TCW_Protect&Ecoregion.png", width = 9, height = 9, units = "in")
