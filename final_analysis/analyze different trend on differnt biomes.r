@@ -224,12 +224,12 @@ color1 = c("#fb6a4a", "#67a9cf", "#cccccc")
 
 ggplot(data=lc_rc1.df.long, aes(x=protect, y=value, fill=trend)) +
   geom_bar(stat="identity", position=position_dodge()) + 
-  facet_grid(lc ~ VI) +
+  facet_grid(VI ~ lc) +
   xlab("") + ylab("Percentage of Land Cover") +
   theme(axis.ticks = element_blank())+
   theme(axis.title.x = element_text(face="bold", colour="black", size=22),axis.text.x  = element_text(colour="black",size=20))+
   theme(axis.title.y = element_text(face="bold", colour="black", size=22),axis.text.y  = element_text(colour="black",size=20))+
-  theme(legend.position=c(0.75,0.1))+
+  theme(legend.position=c(0.6,0.25))+
   theme(legend.text = element_text(size = 18)) +
   theme(legend.title=element_blank()) +
   theme(strip.text.x = element_text(size=22))+ 
@@ -284,7 +284,7 @@ ggplot(data=lc_rc1.df.long, aes(x=protect, y=value, fill=trend)) +
   theme(axis.ticks = element_blank())+
   theme(axis.title.x = element_text(face="bold", colour="black", size=22),axis.text.x  = element_text(colour="black",size=20))+
   theme(axis.title.y = element_text(face="bold", colour="black", size=22),axis.text.y  = element_text(colour="black",size=20))+
-  theme(legend.position=c(0.75,0.1))+
+  theme(legend.position=c(0.48,0.18))+
   theme(legend.text = element_text(size = 18)) +
   theme(legend.title=element_blank()) +
   theme(strip.text.x = element_text(size=22))+ 
