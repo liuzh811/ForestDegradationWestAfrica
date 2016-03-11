@@ -348,6 +348,7 @@ lc_rc1.df.long$trend = factor(lc_rc1.df.long$trend)
 levels(lc_rc1.df.long$trend) <- c("Negative", "Positive", "No Trend")
 lc_rc1.df.long$lc = factor(lc_rc1.df.long$lc)
 levels(lc_rc1.df.long$lc) <- c("CÃ´te d'Ivoire", "Ghana", "Guinea", "Liberia", "Sierra Leone")
+levels(lc_rc1.df.long$lc) <- c("CIV", "GHA", "GIN", "LBR", "SLE")
 lc_rc1.df.long$protect = factor(lc_rc1.df.long$protect)
 levels(lc_rc1.df.long$protect) <- c("Reserve", "Eco-Reserve","Non-Protected")
 levels(lc_rc1.df.long$protect) <- c("R", "ER","NP")
@@ -404,6 +405,9 @@ levels(lc_rc1.df.long$trend) <- c("Negative", "Positive", "No Trend")
 lc_rc1.df.long$lc = factor(lc_rc1.df.long$lc)
 levels(lc_rc1.df.long$lc) <- c("Western Guinean\n Lowland Forests", "Eastern Guinean\n Forests", 
                                "Guinean Forest\n-Savanna Mosaic", "West Sudanian\n Savanna")
+
+levels(lc_rc1.df.long$lc) <- c("WGLF", "EGF", "GFSM", "WSS")                               
+                               
 lc_rc1.df.long$protect = factor(lc_rc1.df.long$protect)
 levels(lc_rc1.df.long$protect) <- c("Reserve", "Eco-Reserve","Non-Protected")
 levels(lc_rc1.df.long$protect) <- c("R", "ER","NP")
@@ -541,14 +545,22 @@ lc_rc1.df.long = rbind(lc_rc1.df.long, lc_rc2.df.long)
 
 lc_rc1.df.long$trend = factor(lc_rc1.df.long$trend)
 levels(lc_rc1.df.long$trend) <- c("Negative", "Positive", "No Trend")
+#change the order of the trend
+lc_rc1.df.long$trend <- ordered(lc_rc1.df.long$trend, levels = c("Negative", "No Trend", "Positive"))
+
 lc_rc1.df.long$lc = factor(lc_rc1.df.long$lc)
 levels(lc_rc1.df.long$lc) <- c("Western Guinean\n Lowland Forests", "Eastern Guinean\n Forests", 
                                "Guinean Forest\n-Savanna Mosaic", "West Sudanian\n Savanna")
+levels(lc_rc1.df.long$lc) <- c("WGLF", "EGF", "GFSM", "WSS")                               
+#change the order of the ecoregion
+lc_rc1.df.long$lc <- ordered(lc_rc1.df.long$lc, levels = c("WSS", "GFSM", "EGF","WGLF"))
+                           
 lc_rc1.df.long$protect = factor(lc_rc1.df.long$protect)
 levels(lc_rc1.df.long$protect) <- c("Reserve", "Eco-Reserve","Non-Protected", "All")
 levels(lc_rc1.df.long$protect) <- c("R", "ER","NP", "ALL")
 
-color1 = c("#fb6a4a", "#67a9cf", "#cccccc")
+#color1 = c("#fb6a4a", "#67a9cf", "#cccccc"): color order for c("Negative", "Positive", "No Trend")
+color1 = c("#fb6a4a", "#cccccc", "#67a9cf") # color order for c("Negative", "No Trend","Positive")
 
 ggplot(data=lc_rc1.df.long, aes(x=protect, y=value, fill=trend)) +
   geom_bar(stat="identity", position=position_dodge()) + 
@@ -621,14 +633,19 @@ lc_rc1.df.long = rbind(lc_rc1.df.long, lc_rc2.df.long)
 
 lc_rc1.df.long$trend = factor(lc_rc1.df.long$trend)
 levels(lc_rc1.df.long$trend) <- c("Negative", "Positive", "No Trend")
+#change the order of the trend
+lc_rc1.df.long$trend <- ordered(lc_rc1.df.long$trend, levels = c("Negative", "No Trend", "Positive"))
+
 lc_rc1.df.long$lc = factor(lc_rc1.df.long$lc)
 levels(lc_rc1.df.long$lc) <- c("CÃ´te d'Ivoire", "Ghana", "Guinea", "Liberia", "Sierra Leone")
+levels(lc_rc1.df.long$lc) <- c("CIV", "GHA", "GIN", "LBR", "SLE")
 
 lc_rc1.df.long$protect = factor(lc_rc1.df.long$protect)
 levels(lc_rc1.df.long$protect) <- c("Reserve", "Eco-Reserve","Non-Protected", "All")
 levels(lc_rc1.df.long$protect) <- c("R", "ER","NP", "ALL")
 
-color1 = c("#fb6a4a", "#67a9cf", "#cccccc")
+#color1 = c("#fb6a4a", "#67a9cf", "#cccccc"): color order for c("Negative", "Positive", "No Trend")
+color1 = c("#fb6a4a", "#cccccc", "#67a9cf") # color order for c("Negative", "No Trend","Positive")
 
 ggplot(data=lc_rc1.df.long, aes(x=protect, y=value, fill=trend)) +
   geom_bar(stat="identity", position=position_dodge()) + 
@@ -652,6 +669,158 @@ ggplot(data=lc_rc1.df.long, aes(x=protect, y=value, fill=trend)) +
 
 ggsave(".\\NBAR_results4\\residual.trend_EVI&TCW_country2.png", width = 10, height = 7.5, units = "in")
 
+#plot the comparsion between Ghana and Ivory coast
+# for TCW
+lc_rc1 = county_b_ghana.grd*1000 + protected.grd*100+eco.sp.grd*10 + TCW.trd2.grd 
+lc_rc1.df = data.frame(freq(lc_rc1))[-138,] #
+lc_rc1.df$lc = floor(lc_rc1.df$value/1000)
+lc_rc1.df$protect = floor((lc_rc1.df$value - lc_rc1.df$lc*1000)/100)
+lc_rc1.df$ecoregion = floor((lc_rc1.df$value - lc_rc1.df$lc*1000-lc_rc1.df$protect*100)/10)
+lc_rc1.df$trend = lc_rc1.df$value - lc_rc1.df$lc*1000-lc_rc1.df$protect*100-lc_rc1.df$ecoregion*10
+#only keep cote devior [1] and ghana [2], and {2-4}
+lc_rc1.df = lc_rc1.df[which(lc_rc1.df$lc < 3 & lc_rc1.df$ecoregion > 1 & lc_rc1.df$ecoregion < 5), ]
+lc_sum = aggregate(count~ecoregion+lc, data = lc_rc1.df, FUN = "sum")
+lc_rc1.df$prop = 100*lc_rc1.df$count/rep(lc_sum$count, each = 3)
+
+#add change in all the regions, remove the protected status
+
+lc_rc2 = county_b_ghana.grd*1000 + eco.sp.grd*10 + TCW.trd2.grd
+lc_rc2.df = data.frame(freq(lc_rc2))[-57,]
+lc_rc2.df$lc = floor(lc_rc2.df$value/1000)
+lc_rc2.df$ecoregion = floor((lc_rc2.df$value - lc_rc2.df$lc*1000)/10)
+lc_rc2.df$trend = lc_rc2.df$value - lc_rc2.df$lc*1000 - lc_rc2.df$ecoregion*10
+#only keep cote devior [1] and ghana [2], and {2-4}
+lc_rc2.df = lc_rc2.df[which(lc_rc2.df$lc < 3 & lc_rc2.df$ecoregion > 1 & lc_rc2.df$ecoregion < 5), ]
+lc_sum = aggregate(count~ecoregion+lc, data = lc_rc2.df, FUN = "sum")
+lc_rc2.df$prop = 100*lc_rc2.df$count/rep(lc_sum$count, each = 3)
+
+lc_rc2.df = data.frame(lc_rc2.df[,c("value", "count","lc")], protect = 4, lc_rc2.df[,c("ecoregion", "trend","prop")])
+
+lc_rc.df = rbind(lc_rc1.df, lc_rc2.df)
+
+lc_rc1.df.long = melt(lc_rc.df[,c("lc","protect","ecoregion","trend","prop")], id.vars=c("lc", "protect","ecoregion","trend"))
+
+
+lc_rc1.df.long$trend = factor(lc_rc1.df.long$trend)
+levels(lc_rc1.df.long$trend) <- c("Negative", "Positive", "No Trend")
+
+#change the order of the trend
+lc_rc1.df.long$trend <- ordered(lc_rc1.df.long$trend, levels = c("Negative", "No Trend", "Positive"))
+
+lc_rc1.df.long$lc = factor(lc_rc1.df.long$lc)
+levels(lc_rc1.df.long$lc) <- c("CIV", "GHA")                               
+
+lc_rc1.df.long$ecoregion = factor(lc_rc1.df.long$ecoregion)
+levels(lc_rc1.df.long$ecoregion) <- c("EGF", "GFSM", "WSS")                            
+                             
+#change the order of the ecoregion
+lc_rc1.df.long$ecoregion <- ordered(lc_rc1.df.long$ecoregion, levels = c("WSS", "GFSM", "EGF"))
+
+lc_rc1.df.long$protect = factor(lc_rc1.df.long$protect)
+levels(lc_rc1.df.long$protect) <- c("Reserve", "Eco-Reserve","Non-Protected", "All")
+levels(lc_rc1.df.long$protect) <- c("R", "ER","NP", "ALL")
+
+#color1 = c("#fb6a4a", "#67a9cf", "#cccccc"): color order for c("Negative", "Positive", "No Trend")
+color1 = c("#fb6a4a", "#cccccc", "#67a9cf") # color order for c("Negative", "No Trend","Positive")
+
+
+ggplot(data=lc_rc1.df.long, aes(x=protect, y=value, fill=trend)) +
+  geom_bar(stat="identity", position=position_dodge()) + 
+  facet_grid(ecoregion~lc) +
+  xlab("") + ylab("Percentage of Land Cover") +
+  theme(axis.ticks = element_blank())+
+  theme(axis.title.x = element_text(face="bold", colour="black", size=22),axis.text.x  = element_text(colour="black",size=20))+
+  theme(axis.title.y = element_text(face="bold", colour="black", size=22),axis.text.y  = element_text(colour="black",size=20))+
+  #theme(legend.position=c(0.7,0.45))+
+  theme(legend.position="top")+
+  theme(legend.text = element_text(size = 18)) +
+  theme(legend.title=element_blank()) +
+  theme(strip.text.x = element_text(size=20))+ 
+  theme(strip.text.y = element_text(size=20))+ 
+  #theme(axis.ticks = element_blank(), axis.text.x = element_blank()) + 
+  scale_fill_manual(values=color1, 
+                    name="",
+                    breaks=levels(lc_rc1.df.long$trend),
+                    labels=levels(lc_rc1.df.long$trend)) +
+  guides(fill=guide_legend(ncol=3))
+
+ggsave(".\\NBAR_results4\\residual.trend_ghana_cold_tcw.png", width = 10, height = 7.5, units = "in")
+
+# for EVI
+lc_rc1 = county_b_ghana.grd*1000 + protected.grd*100+eco.sp.grd*10 + EVI.trd2.grd 
+lc_rc1.df = data.frame(freq(lc_rc1))[-138,] #
+lc_rc1.df$lc = floor(lc_rc1.df$value/1000)
+lc_rc1.df$protect = floor((lc_rc1.df$value - lc_rc1.df$lc*1000)/100)
+lc_rc1.df$ecoregion = floor((lc_rc1.df$value - lc_rc1.df$lc*1000-lc_rc1.df$protect*100)/10)
+lc_rc1.df$trend = lc_rc1.df$value - lc_rc1.df$lc*1000-lc_rc1.df$protect*100-lc_rc1.df$ecoregion*10
+#only keep cote devior [1] and ghana [2], and {2-4}
+lc_rc1.df = lc_rc1.df[which(lc_rc1.df$lc < 3 & lc_rc1.df$ecoregion > 1 & lc_rc1.df$ecoregion < 5), ]
+lc_sum = aggregate(count~ecoregion+lc, data = lc_rc1.df, FUN = "sum")
+lc_rc1.df$prop = 100*lc_rc1.df$count/rep(lc_sum$count, each = 3)
+
+#add change in all the regions, remove the protected status
+
+lc_rc2 = county_b_ghana.grd*1000 + eco.sp.grd*10 + EVI.trd2.grd
+lc_rc2.df = data.frame(freq(lc_rc2))[-57,]
+lc_rc2.df$lc = floor(lc_rc2.df$value/1000)
+lc_rc2.df$ecoregion = floor((lc_rc2.df$value - lc_rc2.df$lc*1000)/10)
+lc_rc2.df$trend = lc_rc2.df$value - lc_rc2.df$lc*1000 - lc_rc2.df$ecoregion*10
+#only keep cote devior [1] and ghana [2], and {2-4}
+lc_rc2.df = lc_rc2.df[which(lc_rc2.df$lc < 3 & lc_rc2.df$ecoregion > 1 & lc_rc2.df$ecoregion < 5), ]
+lc_sum = aggregate(count~ecoregion+lc, data = lc_rc2.df, FUN = "sum")
+lc_rc2.df$prop = 100*lc_rc2.df$count/rep(lc_sum$count, each = 3)
+
+lc_rc2.df = data.frame(lc_rc2.df[,c("value", "count","lc")], protect = 4, lc_rc2.df[,c("ecoregion", "trend","prop")])
+
+lc_rc.df = rbind(lc_rc1.df, lc_rc2.df)
+
+lc_rc1.df.long = melt(lc_rc.df[,c("lc","protect","ecoregion","trend","prop")], id.vars=c("lc", "protect","ecoregion","trend"))
+
+
+lc_rc1.df.long$trend = factor(lc_rc1.df.long$trend)
+levels(lc_rc1.df.long$trend) <- c("Negative", "Positive", "No Trend")
+
+#change the order of the trend
+lc_rc1.df.long$trend <- ordered(lc_rc1.df.long$trend, levels = c("Negative", "No Trend", "Positive"))
+
+lc_rc1.df.long$lc = factor(lc_rc1.df.long$lc)
+levels(lc_rc1.df.long$lc) <- c("CIV", "GHA")                               
+
+lc_rc1.df.long$ecoregion = factor(lc_rc1.df.long$ecoregion)
+levels(lc_rc1.df.long$ecoregion) <- c("EGF", "GFSM", "WSS")                            
+                             
+#change the order of the ecoregion
+lc_rc1.df.long$ecoregion <- ordered(lc_rc1.df.long$ecoregion, levels = c("WSS", "GFSM", "EGF"))
+
+lc_rc1.df.long$protect = factor(lc_rc1.df.long$protect)
+levels(lc_rc1.df.long$protect) <- c("Reserve", "Eco-Reserve","Non-Protected", "All")
+levels(lc_rc1.df.long$protect) <- c("R", "ER","NP", "ALL")
+
+#color1 = c("#fb6a4a", "#67a9cf", "#cccccc"): color order for c("Negative", "Positive", "No Trend")
+color1 = c("#fb6a4a", "#cccccc", "#67a9cf") # color order for c("Negative", "No Trend","Positive")
+
+
+ggplot(data=lc_rc1.df.long, aes(x=protect, y=value, fill=trend)) +
+  geom_bar(stat="identity", position=position_dodge()) + 
+  facet_grid(ecoregion~lc) +
+  xlab("") + ylab("Percentage of Land Cover") +
+  theme(axis.ticks = element_blank())+
+  theme(axis.title.x = element_text(face="bold", colour="black", size=22),axis.text.x  = element_text(colour="black",size=20))+
+  theme(axis.title.y = element_text(face="bold", colour="black", size=22),axis.text.y  = element_text(colour="black",size=20))+
+  #theme(legend.position=c(0.7,0.45))+
+  theme(legend.position="top")+
+  theme(legend.text = element_text(size = 18)) +
+  theme(legend.title=element_blank()) +
+  theme(strip.text.x = element_text(size=20))+ 
+  theme(strip.text.y = element_text(size=20))+ 
+  #theme(axis.ticks = element_blank(), axis.text.x = element_blank()) + 
+  scale_fill_manual(values=color1, 
+                    name="",
+                    breaks=levels(lc_rc1.df.long$trend),
+                    labels=levels(lc_rc1.df.long$trend)) +
+  guides(fill=guide_legend(ncol=3))
+
+ggsave(".\\NBAR_results4\\residual.trend_ghana_cold_evi.png", width = 10, height = 7.5, units = "in")
 
 
 #plot some highlighted area
