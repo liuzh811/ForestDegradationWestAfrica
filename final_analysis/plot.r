@@ -292,3 +292,180 @@ levelplot(Numb.recls,
   latticeExtra::layer(sp.polygons(county_b_ghana, col = "black", lwd = 1.5))
   
 dev.off()
+
+
+
+#3/14/2016
+#plot a highlighted regions indices for EVI and TCW only
+
+setwd("D:\\users\\Zhihua\\MODIS")
+library(rgdal)
+library(raster)
+library(rasterVis)
+
+proj.geo = "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs +towgs84=0,0,0 "
+proj.sin = "+proj=sinu +lon_0=0 +x_0=0 +y_0=0 +a=6371007.181 +b=6371007.181 +units=m +no_defs"
+
+county_b = readOGR(dsn="D:\\users\\Zhihua\\TRMM\\gadm_v2_shp",layer="gadm2_westernafrican_dis")
+county_b.geo = spTransform(county_b, CRS(proj.geo))
+county_b_ghana = county_b.geo[which(county_b.geo$NAME_0=="Ghana"|county_b.geo$NAME_0=="CÃ´te d'Ivoire"|
+                                      county_b.geo$NAME_0=="Sierra Leone"|county_b.geo$NAME_0=="Liberia" 
+                                    |county_b.geo$NAME_0=="Guinea"),]
+
+#read into mask files
+county_b_ghana.r = raster(".\\NBAR_results4\\studyarea.mask.tif")
+
+# read into annual indices
+TCW.trd2.grd = raster(".\\NBAR_results4\\TCW2.dry.trend.wa.tif")
+EVI.trd2.grd = raster(".\\NBAR_results4\\EVI2.dry.trend.wa.tif")
+
+#clip to shape
+TCW.trd2.grd = TCW.trd2.grd*county_b_ghana.r
+EVI.trd2.grd = EVI.trd2.grd*county_b_ghana.r
+
+#6.2 plot highlighted regions
+# read into regions
+regions = readOGR(dsn="D:/users/Zhihua/MODIS/NBAR_results3", layer="Val_regions")
+projection(regions) <- proj.geo 
+regions.sin <- spTransform(regions, CRS(proj.sin))
+
+#read into forest loss
+
+fl = raster("D:/users/Zhihua/MODIS/GlobalForestCover/Hansen_GFC2015_loss_10N_010W.tif")
+
+#setup parameters
+color1 = c("#2c7bb6", "#008837", "#cccccc") # color order for c("Negative", "No Trend","Positive")
+
+
+
+for (i in 3:7){
+TCW.trd2.grd1 = crop(TCW.trd2.grd, regions[i,])
+EVI.trd2.grd1 = crop(EVI.trd2.grd, regions[i,])
+
+fl.1 = crop(fl, regions[i,])
+fl.1[fl.1==0] = NA
+
+
+#tcw without forest loss
+png(file = paste(".\\NBAR_results4\\region",i, ".tcw.without.forestloss2.png", sep = ""), width = 2000, height = 2000, units = "px", res = 300)
+
+par(mar=c(0,0,0,0))
+
+plot(TCW.trd2.grd1, 
+     col = color1,
+     legend=FALSE,
+     axes=FALSE,
+     box=FALSE)
+
+# plot(fl.1, 
+#     col = "red", 
+#     legend=FALSE,
+#     axes=FALSE,
+#     box=FALSE,
+#     add = T)
+
+
+#legend("bottomleft",
+#       legend = c("Negative", "Positive", "No Trend"), 
+#      fill = color1,
+#       cex = 1.5,  
+#       box.lwd = 0,
+#       box.col = "white",
+#       bg = "white")
+
+
+dev.off()
+
+#tcw with forest loss
+png(file = paste(".\\NBAR_results4\\region",i, ".tcw.with.forestloss2.png", sep = ""), width = 2000, height = 2000, units = "px", res = 300)
+
+par(mar=c(0,0,0,0))
+
+plot(TCW.trd2.grd1, 
+     col = color1,
+     legend=FALSE,
+     axes=FALSE,
+     box=FALSE)
+
+ plot(fl.1, 
+     col = "red", 
+     legend=FALSE,
+     axes=FALSE,
+     box=FALSE,
+     add = T)
+
+
+#legend("bottomleft",
+#       legend = c("Negative", "Positive", "No Trend"), 
+#      fill = color1,
+#       cex = 1.5,  
+#       box.lwd = 0,
+#       box.col = "white",
+#       bg = "white")
+
+
+dev.off()
+
+
+#evi without forest loss
+png(file = paste(".\\NBAR_results4\\region",i, ".evi.without.forestloss2.png", sep = ""), width = 2000, height = 2000, units = "px", res = 300)
+
+par(mar=c(0,0,0,0))
+
+plot(EVI.trd2.grd1, 
+     col = color1,
+     legend=FALSE,
+     axes=FALSE,
+     box=FALSE)
+
+# plot(fl.1, 
+#     col = "red", 
+#     legend=FALSE,
+#     axes=FALSE,
+#     box=FALSE,
+#     add = T)
+
+
+#legend("bottomleft",
+#       legend = c("Negative", "Positive", "No Trend"), 
+#      fill = color1,
+#       cex = 1.5,  
+#       box.lwd = 0,
+#       box.col = "white",
+#       bg = "white")
+
+
+dev.off()
+
+#tcw with forest loss
+png(file = paste(".\\NBAR_results4\\region",i, ".evi.with.forestloss2.png", sep = ""), width = 2000, height = 2000, units = "px", res = 300)
+
+par(mar=c(0,0,0,0))
+
+plot(EVI.trd2.grd1, 
+     col = color1,
+     legend=FALSE,
+     axes=FALSE,
+     box=FALSE)
+
+plot(fl.1, 
+     col = "red", 
+     legend=FALSE,
+     axes=FALSE,
+     box=FALSE,
+     add = T)
+
+
+#legend("bottomleft",
+#       legend = c("Negative", "Positive", "No Trend"), 
+#      fill = color1,
+#       cex = 1.5,  
+#       box.lwd = 0,
+#       box.col = "white",
+#       bg = "white")
+
+
+dev.off()
+
+}
+
