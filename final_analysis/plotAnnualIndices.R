@@ -110,7 +110,7 @@ breaks2_change <- 0:2
 legendbrks2_change <- 1:2 - 0.5
 clasnames_change = c("No", "Yes")
 
-png(".\\NBAR_results4\\annual_evi.png", height = 1500, width = 2000, res = 300, units = "px")
+png(".\\NBAR_results4\\Consecutive5nas.png", height = 1500, width = 2000, res = 300, units = "px")
 
 p.strip <- list(cex=1.3, lines=2)
 levelplot(t1,
