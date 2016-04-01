@@ -871,6 +871,7 @@ levels(lc_rc1.df.long$country) <- c("CIV", "GHA", "GIN", "LBR", "SLE")
 #re-order country based annual mean rainfall
 #lc_rc1.df.long$country <- ordered(lc_rc1.df.long$country, levels = c("GIN", "SLE", "LBR","CIV","GHA"))
 lc_rc1.df.long$country <- ordered(lc_rc1.df.long$country, levels = c("SLE", "LBR","GIN", "CIV","GHA"))
+lc_rc1.df.long$country <- ordered(lc_rc1.df.long$country, levels = c("GHA", "CIV","GIN", "LBR","SLE"))
 
 #color1 = c("#fb6a4a", "#67a9cf", "#cccccc"): color order for c("Negative", "Positive", "No Trend")
 color1 = c("#fb6a4a", "#cccccc", "#67a9cf") # color order for c("Negative", "No Trend","Positive")
