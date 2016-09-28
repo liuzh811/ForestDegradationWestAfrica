@@ -129,7 +129,7 @@ levels(lc_rc1.df.long$protect) <- c("R", "ER","NP", "ALL")
 #color1 = c("#fb6a4a", "#67a9cf", "#cccccc"): color order for c("Negative", "Positive", "No Trend")
 color1 = c("#fb6a4a", "#cccccc", "#67a9cf") # color order for c("Negative", "No Trend","Positive")
 
-write.csv(lc_rc1.df.long, ".\\NBAR_results4\\residual.trend_EVI&TCW_ecoregion-country-092816.csv")
+write.csv(lc_rc1.df.long, ".\\NBAR_results4\\residual.trend_EVI&TCW_ecoregion2-092816.csv")
 
 ggplot(data=lc_rc1.df.long, aes(x=protect, y=value, fill=trend)) +
   geom_bar(stat="identity", position=position_dodge()) + 
