@@ -4,6 +4,30 @@
 # make figures and calculate propotations based on residual trend, before the 3 by 3 moving box
 Figure 4 (trend map) is in C:\zhihua\dataset\rs_revision
 
+#calculate the percentage of each class
+evi = raster("C:\\zhihua\\dataset\\rs_revision\\data\\evi.df.residual.trd.wa2-2.tif")
+tcw = raster("C:\\zhihua\\dataset\\rs_revision\\data\\tcw.df.residual.trd.wa2-2.tif")
+
+evi.df = data.frame(freq(evi))
+tcw.df = data.frame(freq(tcw))
+
+evi.df = evi.df[-5,]; evi.df$prop = 100*evi.df$count/sum(evi.df$count)
+tcw.df = tcw.df[-5,]; tcw.df$prop = 100*tcw.df$count/sum(tcw.df$count)
+
+> evi.df
+  value   count      prop
+1     1  387231  8.410720
+2     2  730923 15.875767
+3     3 3380318 73.421058
+4     4  105545  2.292455
+
+> tcw.df
+  value   count      prop
+1     1  963141 20.919580
+2     2  247502  5.375784
+3     3 3287829 71.412182
+4     4  105545  2.292455
+
 ########## section 3: calculate trend on different regions ################
 library("raster")
 library("dismo")
