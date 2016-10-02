@@ -28,6 +28,16 @@ tcw.df = tcw.df[-5,]; tcw.df$prop = 100*tcw.df$count/sum(tcw.df$count)
 3     3 3287829 71.412182
 4     4  105545  2.292455
 
+comp = evi == tcw
+comp.df = data.frame(freq(comp))[-3,]
+comp.df$prop = 100*comp.df$count/sum(comp.df$count)
+> comp.df
+  value   count    prop
+1     0 1733882 37.6602
+2     1 2870135 62.3398
+> 
+
+
 ########## section 3: calculate trend on different regions ################
 library("raster")
 library("dismo")
